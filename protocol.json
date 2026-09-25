@@ -40,7 +40,13 @@
   },
   "seed": 20260924,
   "seed_count": 5,
-  "seeds": [20260924, 20260925, 20260926, 1, 2],
+  "seeds": [
+    20260924,
+    20260925,
+    20260926,
+    1,
+    2
+  ],
   "seed_note": "以 5 个随机种子在完全相同的数据划分、超参数与选模准则下重跑训练、忠实度检验、留一扰动与门控统计：验证集 Macro-F1 0.6117±0.0093、MAE 0.6332±0.0447、Pearson 0.6579±0.0150，测试划分 Macro-F1 0.6173±0.0062。正文报告预注册种子 20260924 的结果，不在重跑结果中择优。留一扰动下文本在 5 个种子上都居首，视觉与语音的次序有 1 次反转，故不对这两位排序。",
   "model": {
     "hidden": 96,
@@ -76,7 +82,9 @@
     "heads": {
       "polarity": "Linear(96,3)",
       "intensity": "Linear(96,1)"
-    }
+    },
+    "param_count": 366538,
+    "param_count_note": "由模型 state_dict 逐项求和得到（0.367 M），与输出目录 models/q3_training.json 的参数量字段一致"
   },
   "loss": {
     "classification": "CrossEntropyLoss(weight = inverse class frequency)",
@@ -98,8 +106,8 @@
   "selection": {
     "metric": "验证集 Macro-F1",
     "tie_break": null,
-    "best_epoch": 8,
-    "stopped_at_epoch": 20,
+    "best_epoch": 4,
+    "stopped_at_epoch": 16,
     "decision_threshold": "argmax（固定对称判决，等价阈值为 0；不存在需要调优的阈值）",
     "note": "验证集参与早停与最佳 epoch 选择，因此报告的是开发评价，不是独立测试成绩"
   },
@@ -118,7 +126,7 @@
         "group_means": {
           "text": {
             "top": 0.2888,
-            "rand": 0.0680,
+            "rand": 0.068,
             "low": 0.0196
           },
           "vision": {
@@ -139,9 +147,33 @@
         },
         "permutation_null": {
           "protocol": "把候选位上的注意力权重随机重排构造经验零分布：峰值组=均匀随机 k 子集、低谷组=从剩余候选位均匀随机取 k、随机组=均匀随机 k 子集，R=5 次取平均；200 组抽样池 × 4000 轮",
-          "text": {"null_mean": 0.2271, "ci95": [0.1964, 0.2581], "observed": 0.7391, "p_one_sided": 0.0002},
-          "audio": {"null_mean": 0.2238, "ci95": [0.1938, 0.2556], "observed": 0.2753, "p_one_sided": 0.0012},
-          "vision": {"null_mean": 0.2216, "ci95": [0.1915, 0.2533], "observed": 0.2401, "p_one_sided": 0.1362}
+          "text": {
+            "null_mean": 0.2271,
+            "ci95": [
+              0.1964,
+              0.2581
+            ],
+            "observed": 0.7391,
+            "p_one_sided": 0.0002
+          },
+          "audio": {
+            "null_mean": 0.2238,
+            "ci95": [
+              0.1938,
+              0.2556
+            ],
+            "observed": 0.2753,
+            "p_one_sided": 0.0012
+          },
+          "vision": {
+            "null_mean": 0.2216,
+            "ci95": [
+              0.1915,
+              0.2533
+            ],
+            "observed": 0.2401,
+            "p_one_sided": 0.1362
+          }
         },
         "attn_concentration_vs_uniform": {
           "text": 4.01,
@@ -200,10 +232,11 @@
       "figures/q3_modality_weights.png",
       "figures/q3_gate_vs_lomo.png",
       "figures/q3_faithfulness.png"
-    ]
+    ],
+    "shapley_percentiles": "results/shapley_percentiles.json"
   },
   "validation_metrics_development_only": {
-    "accuracy": 0.636,
+    "accuracy": 0.6442,
     "macro_f1": 0.6118,
     "mae": 0.6074,
     "pearson": 0.675,
@@ -225,6 +258,39 @@
     "验证集用于早停与最佳 epoch 选择，全部指标属开发评价。",
     "本方案已用 5 个随机种子重跑（验证集 Macro-F1 0.6117±0.0093）；视听两路的相对次序在 5 个种子中有 1 次反转，只主张文本明显高于另两路。",
     "附件4 无标签，不能报告 Accuracy / F1 / MAE / Pearson 等需要真值的指标。",
-    "中性类召回 0.3913 是主要瓶颈（83/184 中性被判为正向）。"
-  ]
+    "中性类召回 0.3913 是主要瓶颈（83/184 中性被判为正向）。",
+    "Shapley 值的分位数与 mean|φ| 已随 results/shapley_percentiles.json 交付；其中按样本配对的 Bootstrap 区间只刻画本次训练的开发集抽样不确定性，不替代跨训练种子的稳定性检验（后者见 seed_stability.json）。"
+  ],
+  "frozen_at": "2026-09-25（第 31 轮定型；第 35/36 轮仅新增检验性产物与文字校订，未重训模型）",
+  "frozen_artifacts": {
+    "models/q3_model.pt": "F58C85D3E24017E863CE52EF1863FFB89E08D9C617B444915DC6A99496626C69",
+    "models/q3_training.json": "544E2DAD4C443805C8E7C5A760275B66CAE54D155F97C9F233D4446595B9DB2A",
+    "results/q3_report.json": "C663FBB45C0651A78D4DFF2FDC7726291E73DC3D3D7A16292F5AE481CA1D88C2",
+    "results/shapley_attribution.json": "400E693ED960EB0E24A5EE032253B270700FA610040F4F5EBE60AA3FD858DBFC",
+    "results/shapley_percentiles.json": "D7A8AA98E83C0E1F0E0171C5F5A50A454F2B9F37FA16A3B0C86AA81CBEB1207F",
+    "results/permutation_test.json": "4C61B45065F970C2F37BC77BD8FD09BFE8524666AF626824BC828E9FDFFEF927",
+    "results/window_faithfulness.json": "0CD50489CBED5253BAF127DE2E8B06313265F396E566407236CF773FD5E5A166",
+    "results/seed_stability.json": "DEBC7F94362649785035F72D03553091EF9AA8DF5568C22C54A71E6EAED7B42F",
+    "results/invariance_check.json": "598DBC6FD12EF8393B1C1CAFFAA9FB2299E79AC39A992635ACC091B6569ED6EC",
+    "results/q3_audit_extra.json": "7A92194ACC17DB5510DC26BF7E5834B95593E00917B2F216AF096F27D5B26BC6"
+  },
+  "hyperparameter_search": {
+    "searched": false,
+    "statement": "未做网格或随机超参搜索：结构与超参按本文件固定设定训练，唯一的模型选择是「按验证集 Macro-F1 挑检查点」（并列取较早轮次），该准则在训练前固定。因此报告的是固定设定下的单次开发集结果，不含超参择优带来的乐观性；检查点层面的选择乐观性已在正文 7.7 节说明。",
+    "fixed_settings": {
+      "hidden": 96,
+      "layers": 1,
+      "n_heads": 4,
+      "dim_feedforward": 192,
+      "dropout": 0.1,
+      "learning_rate": 0.0015,
+      "weight_decay": 0.0001,
+      "batch_size": 128,
+      "max_epochs": 60,
+      "patience": 12,
+      "modality_dropout": 0.1,
+      "scheduler": "CosineAnnealingLR(T_max=60, eta_min=0)",
+      "loss": "CE_w + 1.0 * MSE"
+    }
+  }
 }

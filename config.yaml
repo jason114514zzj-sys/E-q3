@@ -8,9 +8,19 @@
 # ==========================================================
 
 project: q3_explain
-version: "1.1.2"
+version: "1.1.3"
 frozen: true
 frozen_date: "2026-09-25"
+# v1.1.3（2026-09-26）与 v1.1.2 的差异 —— 新增一项**检验性**产物并校正两处记录，模型与主流程产物未变：
+#  1) shapley_percentiles.py：Shapley 值的分位数（5/25/75/95）、正负比例、mean|φ| 与
+#     「文本 − 较弱一路」「|φ_audio| − |φ_vision|」的按样本配对 Bootstrap 95% 区间
+#     （两目标 × 附件2 验证集 728 条 / 附件4 20 条），输出 work/q3/shapley_percentiles.json；
+#  2) shapley.py 的目标口径注释：明确「带符号 φ 读方向与幅度、其均值会因正负相消失真」与
+#     「汇总强弱须用 mean|φ| 或分位数、绝对化后不再满足同一加法分解」，与论文 7.3.5 一致；
+#  3) protocol.json 校正陈旧字段（best_epoch 8→4、stopped_at_epoch 20→16、accuracy 0.636→0.6442，
+#     与 q3_report.json、论文表31 对齐），并增 frozen_at、frozen_artifacts（10 项 sha256）、
+#     hyperparameter_search（明确未做网格/随机搜索）与 model.param_count；config.yaml 同步登记 param_count。
+# 影响：论文第 7 章新增「分位数与配对区间」一段、7.2.6 增补冻结与参数登记一句；模型权重与主流程结果逐字节未变。
 # v1.1.2（2026-09-25）与 v1.1.1 的差异 —— 仍只增加**检验性**实验，模型与主流程产物未变：
 #  1) window_faithfulness.py：把「实际交付的证据区间」本身拿去做等预算对照
 #     （交付窗口 / 随机连续窗口 / 最低注意力连续窗口，k=3、R=5、按样本配对的 Bootstrap 区间），
@@ -89,6 +99,7 @@ preprocessing:
 
 # ---------------- 模型结构 ----------------
 model:
+  param_count: 366538                         # 可训练参数量，由 state_dict 求和（核对见 protocol.json）
   per_modality_encoder:                        # 每模态独立，否则无法分离贡献
     proj: Linear(in_dim, hidden)
     position_embedding: 可学习参数 (1, 50, hidden)，初始化 N(0, 0.02)

@@ -8,12 +8,12 @@
     "sha256": "aaf761644d8ccde78288ef469a2204037547084bc3b221536708d37bead8ced1"
   },
   "config.yaml": {
-    "bytes": 15456,
-    "sha256": "e7abfe576966fed67a362516d16876a84452da0aa01a51a722eb32a42086b9ee"
+    "bytes": 16812,
+    "sha256": "48e0202147d9eba179f36168d02a77062a5b73af001db76cc053b51b437a1e69"
   },
   "protocol.json": {
-    "bytes": 9424,
-    "sha256": "11ee3ad50a2e502fcd69ed2f7233df22cc745ef82f23f0a42e0a7738efda6c33"
+    "bytes": 12351,
+    "sha256": "9743fc9f8f5a7532976ff2a8664d969992dbfe6272397a9f409e7a872a68aa9c"
   },
   "requirements.txt": {
     "bytes": 1189,
@@ -88,8 +88,12 @@
     "sha256": "b52ef93bbc5750a99037c8ab83f2d3467da3f5c15ef876c8f20f6d4227ab1a02"
   },
   "src/q3_explain/shapley.py": {
-    "bytes": 16738,
-    "sha256": "ab66284b64ec3ad30f08c2793cc7a2a26f63edb1229fd23bc0da82a5570e6f92"
+    "bytes": 17483,
+    "sha256": "a84dee02f572d21a7ca32d49d357e78c5ed30500833bd1dca953b104cb3e3c95"
+  },
+  "src/q3_explain/shapley_percentiles.py": {
+    "bytes": 7622,
+    "sha256": "77ae5922b10c1c140b2b6fb19d6daaf25985bebce1d02f210d1a1cb56d886b06"
   },
   "src/q3_explain/train.py": {
     "bytes": 8049,
@@ -146,6 +150,10 @@
   "results/shapley_attribution.json": {
     "bytes": 16995,
     "sha256": "400e693ed960eb0e24a5ee032253b270700fa610040f4f5ebe60aa3fd858dbfc"
+  },
+  "results/shapley_percentiles.json": {
+    "bytes": 12799,
+    "sha256": "d7a8aa98e83c0e1f0e0171c5f5a50a454f2b9f37fa16a3b0c86aa81cbeb1207f"
   },
   "results/window_faithfulness.json": {
     "bytes": 10246,

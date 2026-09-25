@@ -1,0 +1,373 @@
+{
+  "purpose": "Shapley 值的分布形态、正负比例与 mean|φ| 的配对 Bootstrap 区间（审查意见 Q3-04）",
+  "seed": 20260924,
+  "primary_target": "prob_cstar",
+  "secondary_target": "intensity",
+  "note": "两个目标的 φ 语义不同：概率目标固定全输入预测类别 c*（有符号，可作方向读法）；强度目标为带符号回归扰动。mean|φ| 用于汇总强弱，但绝对化后不再满足同一加法分解，因此 mean|φ| 只用来说明某一路的量级，不能与 Σφ=1 的效率性恒等式混用。",
+  "splits": {
+    "attachment2_valid": {
+      "n": 728,
+      "cstar_distribution": {
+        "0": 204,
+        "1": 145,
+        "2": 379
+      },
+      "targets": {
+        "prob_cstar": {
+          "per_modality": {
+            "text": {
+              "n": 728,
+              "mean": 0.366189,
+              "median": 0.374566,
+              "mean_abs": 0.370504,
+              "p05": 0.038487,
+              "p25": 0.224354,
+              "p75": 0.513807,
+              "p95": 0.678333,
+              "abs_p05": 0.066264,
+              "abs_p50": 0.374566,
+              "abs_p95": 0.678333,
+              "share_positive": 0.9643,
+              "share_negative": 0.0357,
+              "share_zero": 0.0
+            },
+            "audio": {
+              "n": 728,
+              "mean": 0.003862,
+              "median": -0.001881,
+              "mean_abs": 0.065689,
+              "p05": -0.117955,
+              "p25": -0.052743,
+              "p75": 0.056249,
+              "p95": 0.15124,
+              "abs_p05": 0.004691,
+              "abs_p50": 0.05393,
+              "abs_p95": 0.164681,
+              "share_positive": 0.489,
+              "share_negative": 0.511,
+              "share_zero": 0.0
+            },
+            "vision": {
+              "n": 728,
+              "mean": 0.008751,
+              "median": 0.006405,
+              "mean_abs": 0.082219,
+              "p05": -0.145859,
+              "p25": -0.07013,
+              "p75": 0.084205,
+              "p95": 0.16013,
+              "abs_p05": 0.006401,
+              "abs_p50": 0.077594,
+              "abs_p95": 0.173625,
+              "share_positive": 0.5151,
+              "share_negative": 0.4643,
+              "share_zero": 0.0206
+            }
+          },
+          "efficiency_max_abs_error": 2.220446049250313e-16,
+          "argmax_share": {
+            "text": 0.8915,
+            "audio": 0.0426,
+            "vision": 0.0659
+          },
+          "paired_bootstrap": {
+            "n_boot": 1000,
+            "seed": 20260924,
+            "resampling_unit": "按样本配对重采样（同一批样本索引在三路之间同步抽取）",
+            "equivalence_margin": "本文未预设数值型实质等效界限；下表只给出按样本配对的 95% 区间，区间含 0 即表示在该次训练的开发集上无法区分，区间不含 0 仅表示本次训练的抽样不确定性下可区分，跨训练种子的稳定性另见结果文件的多种子对照。",
+            "mean_abs_phi_text": [
+              0.356114,
+              0.383751
+            ],
+            "mean_abs_phi_audio": [
+              0.061993,
+              0.069163
+            ],
+            "mean_abs_phi_vision": [
+              0.078195,
+              0.086042
+            ],
+            "gap_text_minus_weaker": [
+              0.273266,
+              0.302308
+            ],
+            "gap_text_minus_weaker_excludes_zero": true,
+            "gap_abs_audio_minus_abs_vision": [
+              -0.022076,
+              -0.011147
+            ],
+            "gap_abs_audio_minus_abs_vision_verdict": "视觉 > 语音（区间整体为负）"
+          }
+        },
+        "intensity": {
+          "per_modality": {
+            "text": {
+              "n": 728,
+              "mean": 0.197254,
+              "median": 0.328807,
+              "mean_abs": 0.788566,
+              "p05": -1.685426,
+              "p25": -0.303851,
+              "p75": 0.855902,
+              "p95": 1.640228,
+              "abs_p05": 0.076899,
+              "abs_p50": 0.671104,
+              "abs_p95": 1.835354,
+              "share_positive": 0.6497,
+              "share_negative": 0.3503,
+              "share_zero": 0.0
+            },
+            "audio": {
+              "n": 728,
+              "mean": 0.041552,
+              "median": 0.038078,
+              "mean_abs": 0.156613,
+              "p05": -0.260995,
+              "p25": -0.096839,
+              "p75": 0.180982,
+              "p95": 0.345964,
+              "abs_p05": 0.013712,
+              "abs_p50": 0.135577,
+              "abs_p95": 0.37843,
+              "share_positive": 0.581,
+              "share_negative": 0.419,
+              "share_zero": 0.0
+            },
+            "vision": {
+              "n": 728,
+              "mean": -0.058454,
+              "median": -0.081984,
+              "mean_abs": 0.207555,
+              "p05": -0.44777,
+              "p25": -0.22948,
+              "p75": 0.087805,
+              "p95": 0.379613,
+              "abs_p05": 0.009957,
+              "abs_p50": 0.179104,
+              "abs_p95": 0.505951,
+              "share_positive": 0.3434,
+              "share_negative": 0.636,
+              "share_zero": 0.0206
+            }
+          },
+          "efficiency_max_abs_error": 4.440892098500626e-16,
+          "argmax_share": {
+            "text": 0.5838,
+            "audio": 0.2624,
+            "vision": 0.1538
+          },
+          "paired_bootstrap": {
+            "n_boot": 1000,
+            "seed": 20260924,
+            "resampling_unit": "按样本配对重采样（同一批样本索引在三路之间同步抽取）",
+            "equivalence_margin": "本文未预设数值型实质等效界限；下表只给出按样本配对的 95% 区间，区间含 0 即表示在该次训练的开发集上无法区分，区间不含 0 仅表示本次训练的抽样不确定性下可区分，跨训练种子的稳定性另见结果文件的多种子对照。",
+            "mean_abs_phi_text": [
+              0.74816,
+              0.826614
+            ],
+            "mean_abs_phi_audio": [
+              0.148139,
+              0.165075
+            ],
+            "mean_abs_phi_vision": [
+              0.196324,
+              0.218459
+            ],
+            "gap_text_minus_weaker": [
+              0.539273,
+              0.621532
+            ],
+            "gap_text_minus_weaker_excludes_zero": true,
+            "gap_abs_audio_minus_abs_vision": [
+              -0.063699,
+              -0.037436
+            ],
+            "gap_abs_audio_minus_abs_vision_verdict": "视觉 > 语音（区间整体为负）"
+          }
+        }
+      }
+    },
+    "attachment4": {
+      "n": 20,
+      "cstar_distribution": {
+        "0": 7,
+        "1": 4,
+        "2": 9
+      },
+      "targets": {
+        "prob_cstar": {
+          "per_modality": {
+            "text": {
+              "n": 20,
+              "mean": 0.423783,
+              "median": 0.450349,
+              "mean_abs": 0.423783,
+              "p05": 0.089199,
+              "p25": 0.342399,
+              "p75": 0.56998,
+              "p95": 0.655337,
+              "abs_p05": 0.089199,
+              "abs_p50": 0.450349,
+              "abs_p95": 0.655337,
+              "share_positive": 1.0,
+              "share_negative": 0.0,
+              "share_zero": 0.0
+            },
+            "audio": {
+              "n": 20,
+              "mean": -0.00945,
+              "median": -0.011575,
+              "mean_abs": 0.038509,
+              "p05": -0.08086,
+              "p25": -0.038876,
+              "p75": 0.011476,
+              "p95": 0.069173,
+              "abs_p05": 0.003003,
+              "abs_p50": 0.030883,
+              "abs_p95": 0.084067,
+              "share_positive": 0.4,
+              "share_negative": 0.6,
+              "share_zero": 0.0
+            },
+            "vision": {
+              "n": 20,
+              "mean": 0.004186,
+              "median": 0.019476,
+              "mean_abs": 0.07363,
+              "p05": -0.15963,
+              "p25": -0.039249,
+              "p75": 0.057563,
+              "p95": 0.12652,
+              "abs_p05": 0.011003,
+              "abs_p50": 0.061113,
+              "abs_p95": 0.181858,
+              "share_positive": 0.6,
+              "share_negative": 0.35,
+              "share_zero": 0.05
+            }
+          },
+          "efficiency_max_abs_error": 1.1102230246251565e-16,
+          "argmax_share": {
+            "text": 0.95,
+            "audio": 0.0,
+            "vision": 0.05
+          },
+          "paired_bootstrap": {
+            "n_boot": 1000,
+            "seed": 20260924,
+            "resampling_unit": "按样本配对重采样（同一批样本索引在三路之间同步抽取）",
+            "equivalence_margin": "本文未预设数值型实质等效界限；下表只给出按样本配对的 95% 区间，区间含 0 即表示在该次训练的开发集上无法区分，区间不含 0 仅表示本次训练的抽样不确定性下可区分，跨训练种子的稳定性另见结果文件的多种子对照。",
+            "mean_abs_phi_text": [
+              0.336845,
+              0.501037
+            ],
+            "mean_abs_phi_audio": [
+              0.025339,
+              0.052956
+            ],
+            "mean_abs_phi_vision": [
+              0.049194,
+              0.100491
+            ],
+            "gap_text_minus_weaker": [
+              0.253692,
+              0.430452
+            ],
+            "gap_text_minus_weaker_excludes_zero": true,
+            "gap_abs_audio_minus_abs_vision": [
+              -0.064967,
+              -0.005722
+            ],
+            "gap_abs_audio_minus_abs_vision_verdict": "视觉 > 语音（区间整体为负）"
+          }
+        },
+        "intensity": {
+          "per_modality": {
+            "text": {
+              "n": 20,
+              "mean": -0.193163,
+              "median": 0.215177,
+              "mean_abs": 1.01459,
+              "p05": -2.3211,
+              "p25": -1.052686,
+              "p75": 0.729846,
+              "p95": 1.367686,
+              "abs_p05": 0.148353,
+              "abs_p50": 0.842874,
+              "abs_p95": 2.3211,
+              "share_positive": 0.55,
+              "share_negative": 0.45,
+              "share_zero": 0.0
+            },
+            "audio": {
+              "n": 20,
+              "mean": 0.036206,
+              "median": 0.071341,
+              "mean_abs": 0.139782,
+              "p05": -0.177519,
+              "p25": -0.103773,
+              "p75": 0.123886,
+              "p95": 0.239424,
+              "abs_p05": 0.057654,
+              "abs_p50": 0.107898,
+              "abs_p95": 0.239424,
+              "share_positive": 0.55,
+              "share_negative": 0.45,
+              "share_zero": 0.0
+            },
+            "vision": {
+              "n": 20,
+              "mean": 0.015744,
+              "median": 0.035114,
+              "mean_abs": 0.186899,
+              "p05": -0.402464,
+              "p25": -0.101867,
+              "p75": 0.155629,
+              "p95": 0.381337,
+              "abs_p05": 0.017453,
+              "abs_p50": 0.138998,
+              "abs_p95": 0.414785,
+              "share_positive": 0.55,
+              "share_negative": 0.4,
+              "share_zero": 0.05
+            }
+          },
+          "efficiency_max_abs_error": 4.440892098500626e-16,
+          "argmax_share": {
+            "text": 0.5,
+            "audio": 0.25,
+            "vision": 0.25
+          },
+          "paired_bootstrap": {
+            "n_boot": 1000,
+            "seed": 20260924,
+            "resampling_unit": "按样本配对重采样（同一批样本索引在三路之间同步抽取）",
+            "equivalence_margin": "本文未预设数值型实质等效界限；下表只给出按样本配对的 95% 区间，区间含 0 即表示在该次训练的开发集上无法区分，区间不含 0 仅表示本次训练的抽样不确定性下可区分，跨训练种子的稳定性另见结果文件的多种子对照。",
+            "mean_abs_phi_text": [
+              0.686095,
+              1.338138
+            ],
+            "mean_abs_phi_audio": [
+              0.107212,
+              0.175229
+            ],
+            "mean_abs_phi_vision": [
+              0.125921,
+              0.253948
+            ],
+            "gap_text_minus_weaker": [
+              0.467689,
+              1.172695
+            ],
+            "gap_text_minus_weaker_excludes_zero": true,
+            "gap_abs_audio_minus_abs_vision": [
+              -0.114617,
+              0.02196
+            ],
+            "gap_abs_audio_minus_abs_vision_verdict": "两者不可区分（区间跨 0）"
+          }
+        }
+      }
+    }
+  }
+}
