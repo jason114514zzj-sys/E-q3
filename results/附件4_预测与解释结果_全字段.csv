@@ -1,0 +1,21 @@
+﻿sample_id,polarity,intensity,gate_dominant,gate_margin,lomo_dominant,lomo_margin,gate_vs_lomo_agree,shapley_target_fixed,evidence_position,evidence_modality,evidence_span,evidence_start_s,evidence_end_s,evidence_word,time_source,time_confidence,fragment_level_claim,unavailable_modalities,note
+01,neutral,0.5405,text,0.6752,text,0.3223,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,11,text,10-11-12,4.0525,5.1,is,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,
+02,positive,-0.1472,text,0.7111,text,0.2607,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,18,text,17-18-19,2.6268,3.493,other’s,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,
+03,negative,-0.4237,text,0.5832,text,0.3221,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,12,text,11-12-13,2.6518,3.2786,I,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,
+04,negative,-1.1184,text,0.3007,text,1.3484,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,25,text,24-25-26,5.5433,6.994,Absolutely,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,
+05,positive,0.6501,text,0.263,vision,0.0354,0,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,14,text,13-14-15,4.3571,6.1,Wagon,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,模态区分度不足，不作强判断
+06,positive,0.6436,text,0.4259,text,0.5326,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,26,text,25-26-27,5.8135,6.3729,you,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,
+07,positive,1.4607,text,0.7222,text,1.2664,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,21,text,20-21-22,5.9074,8.091,“enthusiastically,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,
+08,positive,0.7347,text,0.3305,text,0.7542,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,10,text,9-10-11,3.2415,5.086,Design,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,
+09,negative,-2.1679,text,0.4447,text,2.0284,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,16,text,15-16-17,3.3352,4.8271,would,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,
+10,negative,-2.2517,text,0.6721,text,2.5192,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,30,text,28-29-30,8.2094,9.94,was,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,
+11,negative,-1.0846,text,0.9293,text,1.2012,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,2,text,1-2-3,0.0,0.8175,I,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,
+12,negative,-1.2492,text,0.7613,text,0.7936,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,41,text,40-41-42,12.1606,13.014,very,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,
+13,neutral,0.1595,text,0.6421,text,0.3589,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,5,text,4-5-6,0.8394,1.7312,I,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,vision,
+14,neutral,0.5084,text,0.4994,text,0.2967,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,19,text,18-19-20,3.7223,5.546,Executive,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,
+15,positive,1.1394,vision,0.0451,text,0.3706,0,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,21,vision,19-20-21,6.382,7.3333,to,forced_alignment,近似定位，需回看确认,视听片段不作单样本结论（见 7.3.3）,,模态区分度不足，不作强判断
+16,negative,-2.5029,text,0.8324,text,2.1725,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,10,text,9-10-11,1.6219,3.114,a,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,
+17,positive,1.7392,text,0.6379,text,1.557,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,10,text,9-10-11,4.0067,4.7035,is,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,
+18,neutral,-0.606,text,0.3586,vision,0.0887,0,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,29,text,28-29-30,8.2807,9.2761,been,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,模态区分度不足，不作强判断
+19,positive,0.6116,text,0.4009,text,0.3296,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,4,text,3-4-5,0.8713,2.5429,surprisingly,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,
+20,positive,1.018,text,0.1142,text,0.453,1,prob_cstar(主) / intensity(次)，见 shapley_attribution.json,3,text,2-3-4,0.1969,0.8581,of,forced_alignment,近似定位，需回看确认,仅文本片段可主张忠实性,,

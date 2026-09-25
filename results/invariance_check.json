@@ -1,0 +1,74 @@
+{
+  "checkpoint": "output/models/q3_model.pt",
+  "hidden": 96,
+  "best_epoch": 4,
+  "checks": {
+    "A_padding_payload_irrelevant": {
+      "how": "把不可观测位置的特征整行换成 N(0,10) 噪声后重算（三个模态各一次）",
+      "max_abs_intensity_change": 0.0,
+      "max_abs_logit_change": 0.0,
+      "passed": true
+    },
+    "B_padding_shift_irrelevant": {
+      "how": "把不可观测位置整体循环右移一位（有效位保持原值）后重算",
+      "max_abs_intensity_change": 0.0,
+      "passed": true
+    },
+    "C_masked_positions_never_enter_pooling_or_evidence": {
+      "how": "检查池化注意力在不可观测位置上的最大值；检查每条解释的峰值与区间是否都落在候选位",
+      "max_attention_on_masked_position": 0.0,
+      "evidence_outside_candidates": [],
+      "passed": true
+    },
+    "D_missing_modalities_stay_finite": {
+      "how": "整路置零（含三路同时置零）后前向，检查有限性、门控归零与全空时融合表示为 0",
+      "detail": {
+        "audio+vision": {
+          "all_finite": true,
+          "gate_zero_for_removed": true,
+          "intensity_range": [
+            -2.5145442485809326,
+            2.2332570552825928
+          ]
+        },
+        "text": {
+          "all_finite": true,
+          "gate_zero_for_removed": true,
+          "intensity_range": [
+            -0.93433678150177,
+            0.9743283987045288
+          ]
+        },
+        "vision": {
+          "all_finite": true,
+          "gate_zero_for_removed": true,
+          "intensity_range": [
+            -2.4934446811676025,
+            2.205321788787842
+          ]
+        },
+        "all_three": {
+          "all_finite": true,
+          "pooled_all_zero": true,
+          "gate_uniform_fallback": true,
+          "intensity_constant": 0.02391550876200199,
+          "note": "三路全空时门控走均匀兜底（避免全 -inf softmax），但三个池化向量都是零向量，融合表示恒为零，因此输出与门控取值无关"
+        }
+      },
+      "passed": true
+    },
+    "E_special_tokens_excluded": {
+      "how": "文本候选位数必须等于可观测位数减 2（[CLS] 与 [SEP]）",
+      "violations": [],
+      "passed": true
+    },
+    "F_subword_to_word_verified": {
+      "how": "附件4 逐条比对重建 token id 与 text_bert[0]（见 evidence_time 的 quality 字段）",
+      "verified": "20/20",
+      "mapping_verified_in_explanations": 20,
+      "n_explanations": 20,
+      "passed": true
+    }
+  },
+  "all_passed": true
+}

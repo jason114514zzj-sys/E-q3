@@ -8,9 +8,15 @@
 # ==========================================================
 
 project: q3_explain
-version: "1.0.0"
+version: "1.1.0"
 frozen: true
 frozen_date: "2026-09-25"
+# v1.1.0（2026-09-25）与 v1.0.0 的差异 —— 两处结构/契约变更，均已重训重算：
+#  1) 编码器自注意力补 src_key_padding_mask（并定义整路不可观测时的安全分支）；
+#  2) 子词→词映射由"按比例近似"改为"用 bert-base-uncased 词表重建 token 序列
+#     并与数据自带 text_bert[0] 逐位核对"，同时统一"候选位"口径
+#     （文本剔除 [CLS]/[SEP]，关键证据与遮蔽检验只在候选位上选）。
+# 影响：第 7 章全部数字、表22/24–32、图14–18 与提交 CSV 全部更新。
 
 # ---------------- 任务定义 ----------------
 # 题面段028/029：在给出极性 + 强度的同时，以可量化、可复核的方式说明
@@ -77,9 +83,25 @@ model:
     batch_first: true
     encoder_dropout: 0.1
     output_norm: LayerNorm(hidden)
+    key_padding_mask: true                     # ← v1.1.0 新增
+    key_padding_mask_note: |
+      自注意力对不可观测位置施加 src_key_padding_mask（True = 忽略该键）。
+      只把输入置零是不够的：经过线性投影与位置编码后，零输入仍是非零向量，
+      它会被当成键混进每个有效位置的上下文。位置索引不做压缩或重排。
+      整路不可观测的样本：若所有键都被屏蔽，softmax 在全 -inf 上取均值会得到
+      NaN；这类样本本身没有有效查询，其输出随后被池化掩码丢弃，因此把它们的
+      键掩码放行为"可自注意"即可，既避免 NaN 又不影响任何解释量
+      （由 invariance_check.py 的 A/B/C/D 四项验收复算：改变无效位置载荷、
+      平移填充段都不改变预测，被屏蔽位置池化权重恒为 0，整路缺失仍有限）。
   temporal_attention:                          # ← 关键证据定位
     score: Linear(hidden, hidden/2) → Tanh → Linear(hidden/2, 1)
     mask: 无效位置 logits 置 -inf 后 softmax
+    empty_branch: 整路不可观测时分母为零 → 该模态打分置零、权重全零、池化向量为零向量，不做归一化
+    candidate_positions: |                      # ← v1.1.0 统一口径
+      可被选作证据的位置（候选位）：文本 = 可观测掩码去掉 [CLS] 与 [SEP]；
+      语音/视觉 = 逐位置全通道全零判定的有效位。峰值位置、峰值区间与
+      遮蔽检验的三组位置都只在候选位上选，避免把不可回看的特殊词元当成证据。
+    window: 峰值位置左右的 3 个连续候选位（在候选集端点处向内补齐，仍取满 3 个）
   modality_gate:                               # ← 模态作用程度 / 主要参考模态
     mlp: Linear(3*hidden, hidden) → GELU → Linear(hidden, 3)
     normalize: softmax
@@ -87,7 +109,7 @@ model:
       某个模态在该样本上完全无有效位置时，其 logits 硬置 -inf → 权重恒为 0，
       其余模态重新归一化。**这是硬约束而非正则**：否则模型会给"没有数据"的
       模态赋权，输出"主要参考模态 = vision"这类荒谬解释（附件2 验证集实测过
-      15 条此类样本被赋平均 0.287 的 vision 权重）。
+      15 条此类样本被赋平均 0.2351 的 vision 权重，高于全体平均 0.1745）。
   fusion:
     weighted_sum_then_layer_norm: true
     dropout: 0.1
@@ -115,7 +137,7 @@ training:
   seed: 20260924
   selection:
     metric: 验证集 macro-F1       # 段031「在验证集上选择模型结构、超参数与决策阈值」
-    actual: best_epoch = 8，第 20 轮早停
+    actual: best_epoch = 4，第 16 轮早停（v1.1.0 重训后的实际值）
   decision_threshold: argmax      # 固定对称判决，等价于阈值为 0；无可调阈值
   amp: false
   device: cuda
@@ -128,9 +150,22 @@ evaluation:
     - 多数类（Accuracy / Macro-F1）
     - 训练集均值回归（MAE）
   reported_on: 附件2 验证集（728 条）
+  held_out_control: 附件2 测试划分（727 条）不参与任何选择，仅作留出对照（见 q3_audit_extra.json）
   note: |
     验证集参与早停与最佳 epoch 选择，因此该表现属**开发评价**，
     不是独立测试成绩。附件2 test 未参与任何选择。
+
+# ---------------- 分词与词轴（v1.1.0 新增） ----------------
+tokenizer:
+  vocab: bert-base-uncased（30522 行，Apache-2.0）
+  vocab_file: vocab/bert-base-uncased_vocab.txt      # 随仓库与提交包发布
+  implementation: src/q3_explain/wordpiece.py        # 自实现 BasicTokenizer + WordPiece，不依赖 transformers
+  verification: |
+    重建的 token id 与数据自带 text_bert[0] 逐位比对：
+    附件4 20/20 条、附件2 训练划分随机 400 条 400/400 一致；
+    mask 形状（0=[CLS]，1..n=内容，n+1=[SEP]）同样 20/20 与 400/400 一致。
+    因此 position→subword→word 是精确映射，不是比例近似。
+  truncation: 存储上限 48 个内容子词；超出时尾部子词没有位置（附件4 未触发）
 
 # ---------------- 关键证据时间 ----------------
 evidence_time:
@@ -138,14 +173,17 @@ evidence_time:
   audio: ffmpeg 解码 16 kHz 单声道 → 10 ms 一跳 RMS 能量包络
   video: ffprobe 取真实时长（**不可信 mp4 头部 nb_frames**）
   constraints: [首词起于 0.0, 末词止于时长 D, 严格单调, 语速 ∈ [1,6] 词/秒, 边界向能量谷吸附]
-  measured_quality: 20/20 条覆盖率 1.000；语速 1.80–4.01 词/秒
+  measured_quality: 20/20 条覆盖率 1.000；语速 1.80–4.01 词/秒（中位 2.48）；时长 3.114–21.348 s
   forbidden: j*D/50 均匀切分
   forbidden_reason: |
-    实测这 50 个位置是**词片段轴**而不是等长时间片：
+    实测这 50 个位置是**子词（word-piece）轴**而不是等长时间片：
     20/20 条满足「text_bert 掩码长度 = 音频有效位置数 + 2」（偏移恒为 2，corr = 1.000），
-    音频有效位置数在 11~48 间变化而非恒为 50，上限 48 与 content_slots 吻合。
-    均匀切分与词级对齐的偏差：均值 1.968 s、最大 3.627 s，最差样本 15 号 2.77×。
-  residual_limitation: 本机无 BERT 分词器，子词→词为按比例近似（比值约 1.2，通常误差 ≤1 词）
+    音频有效位置数在 11~48 间变化而非恒为 50，上限 48 与 content_slots 吻合，
+    且重建的 WordPiece 序列与 text_bert[0] 逐位相同。
+    均匀切分与词级对齐的差异：均值 1.587 s、最大 3.595 s，最差样本 15 号 2.29×。
+    注意：这两个数是两种估计之间的差异，不是任一方对人工真值的定位误差。
+  mapping: 子词→词为**精确映射**（见 tokenizer 段），每个词的时间来自约束式对齐，属估计量
+  presentation: 交付时表述为"近似定位，需回看确认"，不称"精确可回看"
 
 # ---------------- 环境 ----------------
 environment:
@@ -166,5 +204,11 @@ outputs:
   explanations: work/q3/explanations.json            # 20 条全量解释
   cards: work/q3/解释卡.md                           # 典型样本解释卡
   report: work/q3/q3_report.json                     # 指标/忠实度/门控-LOMO/时间溯源
-  time_map: work/q3/att4_time_map.json               # 20 条词级起止秒
-  figures: output/figures/q3_*.png                   # 4 张
+  time_map: work/q3/att4_time_map.json               # 20 条词级起止秒 + 逐位置 token→词映射
+  position_map: work/q3/position_time_map.csv        # 20 条 × 50 位置：位置/子词/词/秒区间
+  eight_subsets: work/q3/附件4_8子集逐样本.csv        # 160 行：每样本 8 个子集的概率/强度
+  all_fields: work/q3/附件4_预测与解释结果_全字段.csv  # 解释卡全字段（含不一致标记）
+  audit: work/q3/q3_audit_extra.json                 # 测试划分指标/回归残差/mean|φ|/描述统计
+  invariance: work/q3/invariance_check.json          # 掩码验收（A–F 六项）
+  figures: output/figures/q3_*.png                   # 5 张
+

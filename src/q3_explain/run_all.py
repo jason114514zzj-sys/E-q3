@@ -148,6 +148,41 @@ def main() -> int:
           f"正确时平均置信度 {error_attribution['mean_confidence_when_right']}，"
           f"错误时 {error_attribution['mean_confidence_when_wrong']}")
 
+    # ---- 门控硬约束的消融：不加约束时，整条缺失的模态会分到多少门控权重 ----
+    # 这一段让正文 7.2.4 引用的是一个**机算**数字，而不是手写数字。
+    gate_ablation = {}
+    try:
+        import torch as _t
+        va_masks = {m: _t.from_numpy(va.masks[m]).to(device) for m in MODALITIES}
+        va_batch = {m: _t.from_numpy(np.asarray(getattr(va, m))).to(device)
+                    for m in MODALITIES}
+        with _t.no_grad():
+            free = model(va_batch, va_masks,
+                         gate_constraint=False).gate.cpu().numpy()
+        for m in MODALITIES:
+            absent = ~va.masks[m].any(axis=1)
+            if absent.any():
+                k = MODALITIES.index(m)
+                gate_ablation[m] = {
+                    "n_absent": int(absent.sum()),
+                    "mean_gate_when_absent_unconstrained": round(
+                        float(free[absent, k].mean()), 4),
+                    "mean_gate_overall_unconstrained": round(
+                        float(free[:, k].mean()), 4),
+                    "mean_gate_when_absent_constrained": round(
+                        float(gates[absent, k].mean()), 4),
+                    "mean_gate_overall_constrained": round(
+                        float(gates[:, k].mean()), 4),
+                    "n_absent_argmax_is_the_missing_modality_unconstrained": int(
+                        (free[absent].argmax(axis=1) == k).sum()),
+                    "n_absent_argmax_with_constrained_gate": int(
+                        (gates[absent].argmax(axis=1) == k).sum()),
+                }
+        print("  门控硬约束消融:", gate_ablation)
+    except Exception as exc:  # pragma: no cover - defensive
+        gate_ablation = {"error": f"{exc.__class__.__name__}: {exc}"}
+        print("  门控硬约束消融失败:", gate_ablation)
+
     # ---------------------------------------------------------------- 5
     print("\n[5/8] 解释忠实度检验（遮蔽注意力最高位 / 最低位 / 随机位）")
     faith = faithfulness_test(model, va, device, k=3, n_random=5)
@@ -173,14 +208,22 @@ def main() -> int:
     from .evidence_time import build_time_map, load_time_map
 
     tmap_path = WORK / "q3" / "att4_time_map.json"
-    if tmap_path.exists():
+    force_rebuild = os.environ.get("Q3_REBUILD_TIME_MAP") == "1"
+    if tmap_path.exists() and not force_rebuild:
         time_map = load_time_map(tmap_path)
         print(f"  复用已有时序映射 {tmap_path}（{len(time_map)} 条）")
     else:
-        print("  构建词级强制对齐（附件4 的 20 条音频）…")
+        if tmap_path.exists():
+            print("  Q3_REBUILD_TIME_MAP=1 → 重建词级对齐与子词→词映射")
+            tmap_path.replace(tmap_path.with_suffix(".json.bak"))
+        else:
+            print("  构建词级强制对齐（附件4 的 20 条音频）…")
         time_map = build_time_map(DATA, tmap_path, verbose=False)
     n_aligned = sum(1 for t in time_map.values() if t.words)
-    print(f"  词级对齐可用: {n_aligned}/{len(time_map)} 条")
+    n_verified = sum(1 for t in time_map.values()
+                     if t.quality.get("token_map_verified"))
+    print(f"  词级对齐可用: {n_aligned}/{len(time_map)} 条；"
+          f"子词→词映射逐位核对通过: {n_verified}/{len(time_map)} 条")
 
     exps, _ = build_explanations(model, att4, device, time_map=time_map)
     csv_path = OUT / "q3" / "附件4_预测与解释结果.csv"
@@ -248,6 +291,22 @@ def main() -> int:
         }
     except Exception as exc:  # pragma: no cover - defensive
         axis = {"error": f"{exc.__class__.__name__}: {exc}"}
+    try:
+        n_sub = (att4.masks["text"].sum(axis=1) - 2).astype(int)
+        axis["n_subwords_range_att4"] = [int(n_sub.min()), int(n_sub.max())]
+        axis["token_map_verified_att4"] = (
+            f"{sum(1 for v in time_map.values() if v.quality.get('token_map_verified'))}"
+            f"/{len(time_map)}")
+        axis["position_axis"] = ("子词轴：位置 0 = [CLS]，1..n = 转写文本的 n 个子词，"
+                                 "n+1..48 = 填充，49 = [SEP]；音频与视觉在第 0 位与末位"
+                                 "结构性为零")
+        axis["content_candidates"] = ("文本：可观测掩码去掉 [CLS] 与 [SEP]；"
+                                      "语音/视觉：逐位置全通道全零判定的有效位")
+        axis["subword_to_word"] = ("bert-base-uncased WordPiece（词表 30522 行，"
+                                   "钉在 work/bert-base-uncased_vocab.txt），"
+                                   "重建的 token id 与数据自带 text_bert[0] 逐位比对通过")
+    except Exception as exc:  # pragma: no cover - defensive
+        axis["post_checks_error"] = f"{exc.__class__.__name__}: {exc}"
     print(f"  轴性质复算: {axis}")
 
     report = {
@@ -260,6 +319,15 @@ def main() -> int:
                      "valid_metrics": vm},
         "valid_evaluation": met.to_dict(),
         "error_attribution": error_attribution,
+        "gate_constraint_ablation": gate_ablation,
+        "input_conventions": {
+            "encoder_key_padding_mask": True,
+            "encoder_note": ("编码器自注意力对不可观测位置施加 src_key_padding_mask；"
+                             "整路不可观测的样本另有避免全 -inf softmax 的分支"),
+            "pooling_note": "时间注意力在 softmax 前把不可观测位置置为 -inf，整路不可用时分母为零亦有分支",
+            "content_candidate_rule": ("文本剔除 [CLS]/[SEP]，语音与视觉取有效位；"
+                                       "关键证据与遮蔽检验都只在候选位上选"),
+        },
         "faithfulness": faith,
         "gate_vs_lomo": agree,
         "attachment4_dominant_modality": dict(dom),
@@ -277,26 +345,36 @@ def main() -> int:
                 "ratio": round(float(ratio), 3) if np.isfinite(ratio) else None,
             },
             "why": ("实测 20/20 条满足「text_bert 注意力掩码长度 = 音频有效位置数 + 2」"
-                    "且偏移恒为 2（corr=1.000），对应 config.yaml 的 "
+                    "且偏移恒为 2（corr=1.000），对应 config_q3.yaml 的 "
                     "content_slots=48（首尾各留一个特殊 token）；音频有效位置数在 "
-                    "11~48 之间变化而非恒为 50，说明该轴是词片段（word-piece）轴，"
-                    "不是 50 个等长时间片"),
+                    "11~48 之间变化而非恒为 50，说明该轴是子词（word-piece）轴，"
+                    "不是 50 个等长时间片；子词数由重建的 WordPiece 序列逐位核对"),
             "axis_evidence": axis,
-            "ratio_to_whitespace_words": 1.2002,
-            "uniform_split_error": {
-                "mean_abs_s": 1.9682,
-                "max_abs_s": 3.6271,
-                "worst_sample": "15",
-                "ratio": 2.766,
+            "ratio_to_whitespace_words": {
+                "definition": "附件4 全部 20 条的内容子词总数 / 空格切分的词总数",
+                "value": round(
+                    (int(att4.masks["text"].sum()) - 2 * len(att4))
+                    / max(sum(len(str(t).split()) for t in att4.raw_text), 1), 4),
             },
-            "caveat": ("本机无 BERT 分词器，子词→词为按比例近似；"
-                       "但每个词的时间来自真实强制对齐"),
+            "uniform_split_error": {
+                "mean_abs_s": round(float(np.mean(errs)), 4),
+                "max_abs_s": round(float(np.max(errs)), 4),
+                "worst_sample": exps[worst].sample_id,
+                "ratio": round(float(ratio), 3) if np.isfinite(ratio) else None,
+            },
+            "caveat": ("子词→词映射由 bert-base-uncased WordPiece 重建并与数据自带"
+                       " token id 逐位核对（附件4 20/20、附件2 抽样 400/400 通过），"
+                       "因此该映射是精确的；每个词的时间来自约束式强制对齐，属估计量，"
+                       "证据时间表述为近似定位、需回看确认"
+                       if n_verified == len(time_map) else
+                       "子词→词映射为按比例近似（词表或 token id 核对未通过）；"
+                       "每个词的时间来自约束式强制对齐"),
         },
         "notes": [
             "test 划分未参与任何模型选择（与附件3/4 存在内容重叠）",
             "文本用 text_bert 的 0/1 通道做掩码；text 填充值非零，不可用 x==0 检测",
             "audio/vision 逐维标准化，统计量仅在 train 上拟合",
-            "证据时间来自词级强制对齐；子词→词映射为近似，报告中已标注",
+            "证据时间来自词级强制对齐；子词→词映射由 WordPiece 重建并与数据自带 token id 逐位核对",
             "答案解释为内在可解释（注意力+门控），并用留一扰动与遮蔽检验佐证",
         ],
     }
@@ -367,9 +445,12 @@ def _write_cards_markdown(exps, path: Path, limit: int = 6) -> None:
                      f"即 **{e.evidence_start:.3f}–{e.evidence_end:.3f} 秒**"
                      f"（词级强制对齐）")
         if e.evidence_word:
-            lines.append(f"- **对应词**：`{e.evidence_word}`"
-                         f"（第 {e.evidence_word_index} 个词，按比例映射自第 "
-                         f"{e.evidence_position} 个位置）")
+            words = "、".join(e.evidence_words) if e.evidence_words else e.evidence_word
+            how = ("按 bert-base-uncased 词表重建的 token 序列逐位核对后映射自第 "
+                   if e.mapping_verified else "按比例近似映射自第 ")
+            lines.append(f"- **对应词**：`{words}`"
+                         f"（第 {'/'.join(str(x) for x in e.evidence_word_indices)} 个词，"
+                         f"{how}{e.evidence_position} 个位置）")
         if abs(e.evidence_start - e.naive_start) > 0.05:
             lines.append(f"- ⚠️ **与均匀分配估计的差异**：均匀分配会给出 "
                          f"{e.naive_start:.3f} 秒，本表采用对齐值 "

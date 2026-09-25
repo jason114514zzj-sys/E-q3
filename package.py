@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parent
 MAX_BYTES = 50_000_000
 
 # 收录规则：显式列出目录，避免把 __pycache__ / 中间产物卷进来
-INCLUDE_DIRS = ["src", "models", "results", "figures", "docs"]
+INCLUDE_DIRS = ["src", "models", "results", "figures", "docs", "vocab"]
 INCLUDE_FILES = ["README.md", "method.md", "config.yaml", "protocol.json",
                  "requirements.txt", "runtime_versions.json", "package.py",
                  "DELIVERABLES.md", "SERVER_ENV.md", "verify_manifest.py"]

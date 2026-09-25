@@ -28,14 +28,17 @@ For each of the 20 clips:
    coverage, strict monotonicity and a plausible speaking rate;
 4. store each word's ``[start, end]``.
 
-A token slot is then mapped to a word by proportional index.  No BERT tokenizer
-is installed on this machine (verified: neither ``transformers`` nor
-``tokenizers``), so the subword-to-word mapping is approximate and the module
-says so; the *time* attached to a word comes from genuine forced alignment
-rather than from an even split.
+A token slot is mapped to a word by **reconstructing the WordPiece sequence** of
+``raw_text`` with the pinned ``bert-base-uncased`` vocabulary and checking it
+against the token ids that ship with the data (``text_bert[0]``).  On attachment
+4 that check passes for 20/20 clips position by position, and on 400 sampled
+attachment-2 clips for 400/400, so position -> subword -> word is exact rather
+than approximate.  The proportional estimate is kept only as a fallback for the
+case where the vocabulary or the shipped ids are unavailable, and the JSON
+records which of the two was used (``quality.token_map_verified``).
 
-The deliberate consequence: evidence times become trustworthy, evidence word
-indices remain approximate.  Both facts are reported.
+The *time* attached to a word comes from forced alignment, not from an even
+split; both facts are reported per sample.
 """
 
 from __future__ import annotations
@@ -55,6 +58,10 @@ _SRC = os.environ.get("MOSEI_SRC") or str(Path(__file__).resolve().parents[1])
 if _SRC not in sys.path:
     sys.path.insert(0, _SRC)
 from q1_alignment.monotonic_align import align_words_monotonic  # noqa: E402
+
+from .wordpiece import map_words_to_pieces  # noqa: E402  (used via _token_map_for)
+
+VOCAB_NAME = "bert-base-uncased_vocab.txt"
 
 
 def _tool(name: str) -> str:
@@ -104,26 +111,60 @@ class ClipTimeMap:
     words: list[WordSpan] = field(default_factory=list)
     quality: dict = field(default_factory=dict)
     source: str = "forced_alignment"
+    # Exact position -> word index, one entry per content position 1..n.
+    # Built by reconstructing the WordPiece sequence of ``raw_text`` with the
+    # pinned bert-base-uncased vocabulary and checking it against the token ids
+    # that ship with the data (``text_bert[0]``).  Empty when that check could
+    # not be made, in which case ``word_for_token`` falls back to a proportional
+    # estimate and says so.
+    token_word_index: list[int] = field(default_factory=list)
+    pieces: list[str] = field(default_factory=list)
+    piece_word: list[int] = field(default_factory=list)
+
+    @property
+    def exact_mapping(self) -> bool:
+        return bool(self.quality.get("token_map_verified"))
 
     def word_for_token(self, token_index: int, n_tokens: int) -> int:
-        """Approximate subword slot -> word index.
+        """Subword slot -> word index.
 
-        The position axis counts tokens while the alignment is at word level, so
-        this is a proportional mapping.  Verified ratio n_tokens/n_words is about
-        1.2 on this data, i.e. the error is normally one word or less.
+        Exact when the position-by-position check against the shipped token ids
+        passed; otherwise a proportional estimate (``(p-1)/n * n_words``), which
+        is what this function did before the tokenizer was pinned.
         """
         n_words = len(self.words)
         if n_words == 0 or n_tokens <= 0:
             return 0
+        if self.token_word_index:
+            k = int(token_index) - 1
+            if 0 <= k < len(self.token_word_index):
+                return int(self.token_word_index[k])
         frac = (token_index - 1) / max(n_tokens, 1)
         idx = int(round(frac * n_words))
         return min(max(idx, 0), n_words - 1)
+
+    def words_for_positions(self, positions) -> list[int]:
+        """Word indices covered by a set of subword positions (sorted, unique)."""
+        out: list[int] = []
+        for p in positions:
+            w = self.word_for_token(int(p), len(self.token_word_index))
+            if w not in out:
+                out.append(w)
+        return sorted(out)
 
     def span(self, word_index: int) -> tuple[float, float]:
         if not self.words:
             return 0.0, 0.0
         w = self.words[min(max(word_index, 0), len(self.words) - 1)]
         return w.start, w.end
+
+    def span_of_words(self, word_indices) -> tuple[float, float]:
+        """Union of the spans of several words; (0,0) when there are none."""
+        if not self.words or not word_indices:
+            return 0.0, 0.0
+        idx = [min(max(int(w), 0), len(self.words) - 1) for w in word_indices]
+        return (min(self.words[i].start for i in idx),
+                max(self.words[i].end for i in idx))
 
     def to_dict(self) -> dict:
         return {
@@ -135,6 +176,9 @@ class ClipTimeMap:
                       for w in self.words],
             "quality": self.quality,
             "source": self.source,
+            "token_word_index": self.token_word_index,
+            "pieces": self.pieces,
+            "piece_word": self.piece_word,
         }
 
 
@@ -167,7 +211,13 @@ def _rms_envelope(mp4: Path, hop: float = 0.01) -> tuple[np.ndarray, np.ndarray]
 
 def build_time_map(data_root: Path, out_path: Path,
                    verbose: bool = True) -> dict[str, ClipTimeMap]:
-    """Align every attachment-4 clip's transcript to its audio."""
+    """Align every attachment-4 clip's transcript to its audio.
+
+    Also attaches the **exact** subword -> word mapping: the WordPiece sequence
+    of ``raw_text`` is rebuilt with the pinned bert-base-uncased vocabulary and
+    must reproduce ``text_bert[0]`` position by position.  That turns the old
+    proportional estimate into a checked mapping.
+    """
     root = Path(data_root) / "附件4-可解释专项视频样本与特征文件"
     base = None
     for c in root.rglob("*"):
@@ -179,6 +229,28 @@ def build_time_map(data_root: Path, out_path: Path,
 
     import pickle
 
+    vocab = None
+    root = Path(data_root).parent
+    cands = [os.environ.get("Q3_VOCAB"),
+             Path(os.environ.get("MOSEI_ROOT", "")) / "work" / VOCAB_NAME,
+             root / "work" / VOCAB_NAME,
+             root / "vocab" / VOCAB_NAME,
+             Path(__file__).resolve().parents[2] / "vocab" / VOCAB_NAME,
+             Path(__file__).resolve().parents[2] / "work" / VOCAB_NAME]
+    for cand in cands:
+        if not cand:
+            continue
+        try:
+            if Path(cand).exists():
+                from .wordpiece import load_vocab
+                vocab = load_vocab(cand)
+                print(f"词表: {cand}（{len(vocab)} 个 token）")
+                break
+        except Exception as exc:      # pragma: no cover
+            print(f"词表读取失败 {cand}: {exc}")
+    if vocab is None:
+        print("⚠ 未找到 bert-base-uncased 词表 → 子词→词映射退回比例近似")
+
     pkls = sorted((base / "对齐版本").glob("*.pkl"))
     vids = sorted((base / "对齐版本" / "videos").glob("*.mp4"))
     vid_by_stem = {v.stem: v for v in vids}
@@ -186,7 +258,7 @@ def build_time_map(data_root: Path, out_path: Path,
     maps: dict[str, ClipTimeMap] = {}
     if verbose:
         print(f"{'样本':<8}{'时长':>8}{'词数':>6}{'覆盖':>8}{'语速':>8}"
-              f"{'首词':>9}{'末词起':>9}")
+              f"{'首词':>9}{'末词起':>9}{'子词':>6}{'映射':>7}")
 
     for p in pkls:
         with p.open("rb") as fh:
@@ -198,6 +270,9 @@ def build_time_map(data_root: Path, out_path: Path,
             maps[sid] = ClipTimeMap(sid, 0.0, [],
                                     {"error": "missing video or transcript"})
             continue
+
+        piece_word, pieces, tinfo = _token_map_for(
+            words, o.get("text_bert"), vocab, sid)
 
         dur = _duration(mp4)
         rms, centres = _rms_envelope(mp4)
@@ -217,20 +292,26 @@ def build_time_map(data_root: Path, out_path: Path,
             if hasattr(quality, attr):
                 v = getattr(quality, attr)
                 q[attr] = float(v) if isinstance(v, (int, float)) else v
+        q.update(tinfo)
 
         cov = (spans[-1].end - spans[0].start) / dur if spans and dur else 0.0
         rate = len(spans) / dur if dur else 0.0
-        maps[sid] = ClipTimeMap(sid, dur, spans, q)
+        maps[sid] = ClipTimeMap(sid, dur, spans, q,
+                                token_word_index=piece_word,
+                                pieces=pieces, piece_word=piece_word)
         if verbose:
             print(f"{sid:<8}{dur:>8.3f}{len(spans):>6}{cov:>8.3f}"
-                  f"{rate:>8.2f}{spans[0].start:>9.3f}{spans[-1].start:>9.3f}")
+                  f"{rate:>8.2f}{spans[0].start:>9.3f}{spans[-1].start:>9.3f}"
+                  f"{len(pieces):>6}{'精确' if tinfo.get('token_map_verified') else '近似':>7}")
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(
         json.dumps({k: v.to_dict() for k, v in maps.items()},
                    ensure_ascii=False, indent=2), encoding="utf-8")
     if verbose:
+        n_ok = sum(1 for v in maps.values() if v.quality.get("token_map_verified"))
         print(f"\n已写出 {out_path}")
+        print(f"子词→词映射逐位核对通过：{n_ok}/{len(maps)} 条")
     return maps
 
 
@@ -240,9 +321,56 @@ def load_time_map(path: Path) -> dict[str, ClipTimeMap]:
     for sid, d in raw.items():
         spans = [WordSpan(w["i"], w["w"], w["start"], w["end"])
                  for w in d.get("words", [])]
-        out[sid] = ClipTimeMap(sid, float(d["duration"]), spans,
-                               d.get("quality", {}), d.get("source", ""))
+        out[sid] = ClipTimeMap(
+            sid, float(d["duration"]), spans,
+            d.get("quality", {}), d.get("source", ""),
+            token_word_index=list(d.get("token_word_index", [])),
+            pieces=list(d.get("pieces", [])),
+            piece_word=list(d.get("piece_word", [])),
+        )
     return out
+
+
+def _token_map_for(words: list[str], text_bert, vocab, sample_id: str):
+    """Reconstruct the subword sequence and verify it against the shipped ids.
+
+    Returns ``(piece_word, pieces, info)``.  ``piece_word[k]`` is the word index
+    of the k-th subword, which is also the word index of content position k+1
+    (position 0 is ``[CLS]``), so the same list serves both roles.  When the ids
+    cannot be reproduced the lists come back empty and ``info`` records why, so
+    the caller falls back to the proportional estimate instead of pretending.
+    """
+    info: dict = {"token_map_verified": False}
+    if vocab is None or text_bert is None:
+        info["token_map_reason"] = "no vocabulary or no text_bert available"
+        return [], [], info
+    from .wordpiece import map_words_to_pieces
+
+    tb = np.asarray(text_bert).astype(np.int64)
+    mask = tb[1] > 0
+    n_content = int(mask.sum()) - 2
+    if n_content <= 0:
+        info["token_map_reason"] = "no content positions"
+        return [], [], info
+    tm = map_words_to_pieces(words, vocab, max_pieces=n_content)
+    want = tb[0, 1:1 + n_content]
+    got = np.asarray(tm.ids, dtype=np.int64)
+    info.update({
+        "n_content_positions": int(n_content),
+        "n_pieces": int(tm.n_pieces),
+        "n_words": len(words),
+        "ids_match": int(got.size == want.size and bool(np.array_equal(got, want))),
+        "truncated_words": tm.truncated_words,
+    })
+    if got.size == want.size and np.array_equal(got, want):
+        info["token_map_verified"] = True
+        info["token_map_source"] = ("bert-base-uncased WordPiece reconstructed and "
+                                    "checked against text_bert[0] position by position")
+    else:
+        bad = np.flatnonzero(got != want)[:5].tolist() if got.size == want.size else []
+        info["token_map_reason"] = (f"id mismatch at {len(bad)} positions "
+                                    f"{bad}; mapping falls back to proportional")
+    return list(tm.piece_word), list(tm.pieces), info
 
 
 def uniform_span(position: int, duration: float, positions: int = 50,

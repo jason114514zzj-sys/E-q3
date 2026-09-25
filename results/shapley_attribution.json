@@ -12,14 +12,14 @@
   "splits": {
     "attachment2_valid": {
       "cstar_distribution": {
-        "0": 207,
-        "1": 195,
-        "2": 326
+        "0": 204,
+        "1": 145,
+        "2": 379
       },
       "lomo_intensity_mean": {
-        "text": 0.6228,
-        "audio": 0.0852,
-        "vision": 0.1383
+        "text": 0.7588,
+        "audio": 0.0696,
+        "vision": 0.0908
       },
       "lomo_ranking": [
         "text",
@@ -41,27 +41,27 @@
         "split": "attachment2_valid",
         "n": 728,
         "f_empty_is_constant": false,
-        "f_empty_mean": 0.337182,
-        "f_full_mean": 0.7724,
+        "f_empty_mean": 0.340008,
+        "f_full_mean": 0.7188,
         "mean_phi": {
-          "text": 0.407,
-          "audio": -0.0004,
-          "vision": 0.0287
+          "text": 0.3662,
+          "audio": 0.0039,
+          "vision": 0.0088
         },
         "median_phi": {
-          "text": 0.4268,
-          "audio": -0.0166,
-          "vision": 0.0063
+          "text": 0.3746,
+          "audio": -0.0019,
+          "vision": 0.0064
         },
         "argmax_count": {
-          "text": 600,
-          "audio": 41,
-          "vision": 87
+          "text": 649,
+          "audio": 31,
+          "vision": 48
         },
         "argmax_share": {
-          "text": 0.8242,
-          "audio": 0.0563,
-          "vision": 0.1195
+          "text": 0.8915,
+          "audio": 0.0426,
+          "vision": 0.0659
         },
         "ranking": [
           "text",
@@ -79,35 +79,35 @@
             "audio"
           ]
         ],
-        "sum_phi_mean": 0.4353,
-        "f_full_minus_empty_mean": 0.4353,
+        "sum_phi_mean": 0.3788,
+        "f_full_minus_empty_mean": 0.3788,
         "efficiency_max_abs_error": 2.220446049250313e-16
       },
       "intensity": {
         "split": "attachment2_valid",
         "n": 728,
         "f_empty_is_constant": true,
-        "f_empty_mean": 0.02604,
-        "f_full_mean": 0.2479,
+        "f_empty_mean": 0.023916,
+        "f_full_mean": 0.2043,
         "mean_phi": {
-          "text": 0.1389,
-          "audio": 0.0512,
-          "vision": 0.0317
+          "text": 0.1973,
+          "audio": 0.0416,
+          "vision": -0.0585
         },
         "median_phi": {
-          "text": 0.197,
-          "audio": 0.0615,
-          "vision": -0.0494
+          "text": 0.3288,
+          "audio": 0.0381,
+          "vision": -0.082
         },
         "argmax_count": {
-          "text": 372,
-          "audio": 203,
-          "vision": 153
+          "text": 425,
+          "audio": 191,
+          "vision": 112
         },
         "argmax_share": {
-          "text": 0.511,
-          "audio": 0.2788,
-          "vision": 0.2102
+          "text": 0.5838,
+          "audio": 0.2624,
+          "vision": 0.1538
         },
         "ranking": [
           "text",
@@ -125,8 +125,8 @@
             "vision"
           ]
         ],
-        "sum_phi_mean": 0.2218,
-        "f_full_minus_empty_mean": 0.2218,
+        "sum_phi_mean": 0.1804,
+        "f_full_minus_empty_mean": 0.1804,
         "efficiency_max_abs_error": 4.440892098500626e-16
       },
       "agrees_with_lomo": {
@@ -146,14 +146,14 @@
     },
     "attachment4": {
       "cstar_distribution": {
-        "0": 6,
-        "1": 7,
-        "2": 7
+        "0": 7,
+        "1": 4,
+        "2": 9
       },
       "lomo_intensity_mean": {
-        "text": 0.8784,
-        "audio": 0.1078,
-        "vision": 0.1896
+        "text": 0.9554,
+        "audio": 0.0648,
+        "vision": 0.106
       },
       "lomo_ranking": [
         "text",
@@ -175,245 +175,247 @@
         "split": "attachment4",
         "n": 20,
         "f_empty_is_constant": false,
-        "f_empty_mean": 0.33286,
-        "f_full_mean": 0.8222,
+        "f_empty_mean": 0.339486,
+        "f_full_mean": 0.758,
         "mean_phi": {
-          "text": 0.4892,
-          "audio": 0.0018,
-          "vision": -0.0016
+          "text": 0.4238,
+          "audio": -0.0094,
+          "vision": 0.0042
         },
         "median_phi": {
-          "text": 0.4835,
-          "audio": -0.0223,
-          "vision": -0.0038
+          "text": 0.4503,
+          "audio": -0.0116,
+          "vision": 0.0195
         },
         "argmax_count": {
           "text": 19,
-          "audio": 1,
-          "vision": 0
+          "audio": 0,
+          "vision": 1
         },
         "argmax_share": {
           "text": 0.95,
-          "audio": 0.05,
-          "vision": 0.0
+          "audio": 0.0,
+          "vision": 0.05
         },
         "ranking": [
           "text",
-          "audio",
-          "vision"
+          "vision",
+          "audio"
         ],
         "ranking_merged_ties": [
           [
             "text"
           ],
           [
-            "audio",
             "vision"
+          ],
+          [
+            "audio"
           ]
         ],
-        "sum_phi_mean": 0.4893,
-        "f_full_minus_empty_mean": 0.4893,
+        "sum_phi_mean": 0.4185,
+        "f_full_minus_empty_mean": 0.4185,
         "efficiency_max_abs_error": 1.1102230246251565e-16,
         "per_sample": [
           {
             "sample_id": "01",
             "phi": {
-              "text": 0.2454,
-              "audio": 0.008,
-              "vision": 0.1293
+              "text": 0.1224,
+              "audio": 0.0418,
+              "vision": 0.054
             },
-            "sum_phi": 0.3827,
-            "f_full_minus_empty": 0.3827
+            "sum_phi": 0.2182,
+            "f_full_minus_empty": 0.2182
           },
           {
             "sample_id": "02",
             "phi": {
-              "text": 0.5054,
-              "audio": -0.1233,
-              "vision": -0.1311
+              "text": 0.3805,
+              "audio": -0.082,
+              "vision": -0.1202
             },
-            "sum_phi": 0.2511,
-            "f_full_minus_empty": 0.2511
+            "sum_phi": 0.1783,
+            "f_full_minus_empty": 0.1783
           },
           {
             "sample_id": "03",
             "phi": {
-              "text": 0.2052,
-              "audio": -0.0088,
-              "vision": 0.1593
+              "text": 0.0896,
+              "audio": -0.0043,
+              "vision": 0.0504
             },
-            "sum_phi": 0.3557,
-            "f_full_minus_empty": 0.3557
+            "sum_phi": 0.1357,
+            "f_full_minus_empty": 0.1357
           },
           {
             "sample_id": "04",
             "phi": {
-              "text": 0.7767,
-              "audio": -0.1339,
-              "vision": -0.1906
+              "text": 0.6952,
+              "audio": -0.0808,
+              "vision": -0.0879
             },
-            "sum_phi": 0.4521,
-            "f_full_minus_empty": 0.4521
+            "sum_phi": 0.5265,
+            "f_full_minus_empty": 0.5265
           },
           {
             "sample_id": "05",
             "phi": {
-              "text": 0.2333,
-              "audio": 0.1776,
-              "vision": 0.023
+              "text": 0.0812,
+              "audio": -0.0727,
+              "vision": 0.1834
             },
-            "sum_phi": 0.4339,
-            "f_full_minus_empty": 0.4339
+            "sum_phi": 0.1918,
+            "f_full_minus_empty": 0.1918
           },
           {
             "sample_id": "06",
             "phi": {
-              "text": -0.2063,
-              "audio": 0.2885,
-              "vision": 0.1784
+              "text": 0.5887,
+              "audio": 0.0031,
+              "vision": -0.1818
             },
-            "sum_phi": 0.2605,
-            "f_full_minus_empty": 0.2605
+            "sum_phi": 0.41,
+            "f_full_minus_empty": 0.41
           },
           {
             "sample_id": "07",
             "phi": {
-              "text": 0.4249,
-              "audio": 0.2448,
-              "vision": -0.0878
+              "text": 0.5553,
+              "audio": -0.002,
+              "vision": 0.014
             },
-            "sum_phi": 0.5819,
-            "f_full_minus_empty": 0.5819
+            "sum_phi": 0.5674,
+            "f_full_minus_empty": 0.5674
           },
           {
             "sample_id": "08",
             "phi": {
-              "text": 0.6211,
-              "audio": -0.0767,
-              "vision": -0.1602
+              "text": 0.5637,
+              "audio": -0.0322,
+              "vision": -0.1585
             },
-            "sum_phi": 0.3842,
-            "f_full_minus_empty": 0.3842
+            "sum_phi": 0.3731,
+            "f_full_minus_empty": 0.3731
           },
           {
             "sample_id": "09",
             "phi": {
-              "text": 0.6456,
-              "audio": -0.0061,
-              "vision": 0.0149
+              "text": 0.5559,
+              "audio": -0.0439,
+              "vision": 0.1235
             },
-            "sum_phi": 0.6544,
-            "f_full_minus_empty": 0.6544
+            "sum_phi": 0.6355,
+            "f_full_minus_empty": 0.6355
           },
           {
             "sample_id": "10",
             "phi": {
-              "text": 0.7774,
-              "audio": 0.0579,
-              "vision": -0.182
+              "text": 0.6532,
+              "audio": -0.0372,
+              "vision": 0.0124
             },
-            "sum_phi": 0.6533,
-            "f_full_minus_empty": 0.6533
+            "sum_phi": 0.6285,
+            "f_full_minus_empty": 0.6285
           },
           {
             "sample_id": "11",
             "phi": {
-              "text": 0.711,
-              "audio": -0.0358,
-              "vision": -0.0302
+              "text": 0.4522,
+              "audio": 0.1233,
+              "vision": -0.0116
             },
-            "sum_phi": 0.645,
-            "f_full_minus_empty": 0.645
+            "sum_phi": 0.5639,
+            "f_full_minus_empty": 0.5639
           },
           {
             "sample_id": "12",
             "phi": {
-              "text": 0.7203,
-              "audio": -0.0621,
-              "vision": -0.0556
+              "text": 0.4485,
+              "audio": 0.0663,
+              "vision": 0.0337
             },
-            "sum_phi": 0.6026,
-            "f_full_minus_empty": 0.6026
+            "sum_phi": 0.5485,
+            "f_full_minus_empty": 0.5485
           },
           {
             "sample_id": "13",
             "phi": {
-              "text": 0.3743,
-              "audio": 0.0563,
+              "text": 0.3875,
+              "audio": -0.0553,
               "vision": 0.0
             },
-            "sum_phi": 0.4306,
-            "f_full_minus_empty": 0.4306
+            "sum_phi": 0.3321,
+            "f_full_minus_empty": 0.3321
           },
           {
             "sample_id": "14",
             "phi": {
-              "text": 0.4558,
-              "audio": 0.1278,
-              "vision": -0.1931
+              "text": 0.3524,
+              "audio": 0.0108,
+              "vision": -0.1114
             },
-            "sum_phi": 0.3905,
-            "f_full_minus_empty": 0.3905
+            "sum_phi": 0.2517,
+            "f_full_minus_empty": 0.2517
           },
           {
             "sample_id": "15",
             "phi": {
-              "text": 0.4617,
-              "audio": -0.0061,
-              "vision": 0.0489
+              "text": 0.4693,
+              "audio": 0.0135,
+              "vision": -0.023
             },
-            "sum_phi": 0.5045,
-            "f_full_minus_empty": 0.5045
+            "sum_phi": 0.4598,
+            "f_full_minus_empty": 0.4598
           },
           {
             "sample_id": "16",
             "phi": {
-              "text": 0.7758,
-              "audio": -0.0551,
-              "vision": -0.0677
+              "text": 0.5987,
+              "audio": -0.0296,
+              "vision": 0.0682
             },
-            "sum_phi": 0.653,
-            "f_full_minus_empty": 0.653
+            "sum_phi": 0.6373,
+            "f_full_minus_empty": 0.6373
           },
           {
             "sample_id": "17",
             "phi": {
-              "text": 0.6985,
-              "audio": -0.0713,
-              "vision": -0.0076
+              "text": 0.6075,
+              "audio": -0.0188,
+              "vision": 0.0249
             },
-            "sum_phi": 0.6196,
-            "f_full_minus_empty": 0.6196
+            "sum_phi": 0.6136,
+            "f_full_minus_empty": 0.6136
           },
           {
             "sample_id": "18",
             "phi": {
-              "text": 0.3948,
-              "audio": -0.0605,
-              "vision": 0.0014
+              "text": 0.1546,
+              "audio": -0.0207,
+              "vision": 0.0484
             },
-            "sum_phi": 0.3356,
-            "f_full_minus_empty": 0.3356
+            "sum_phi": 0.1823,
+            "f_full_minus_empty": 0.1823
           },
           {
             "sample_id": "19",
             "phi": {
-              "text": 0.3878,
-              "audio": -0.1121,
-              "vision": 0.3268
+              "text": 0.3125,
+              "audio": 0.0231,
+              "vision": 0.0782
             },
-            "sum_phi": 0.6025,
-            "f_full_minus_empty": 0.6025
+            "sum_phi": 0.4138,
+            "f_full_minus_empty": 0.4138
           },
           {
             "sample_id": "20",
             "phi": {
-              "text": 0.5744,
-              "audio": -0.1728,
-              "vision": 0.1913
+              "text": 0.4067,
+              "audio": 0.0087,
+              "vision": 0.087
             },
-            "sum_phi": 0.5928,
-            "f_full_minus_empty": 0.5928
+            "sum_phi": 0.5025,
+            "f_full_minus_empty": 0.5025
           }
         ]
       },
@@ -421,257 +423,257 @@
         "split": "attachment4",
         "n": 20,
         "f_empty_is_constant": true,
-        "f_empty_mean": 0.02604,
-        "f_full_mean": 0.0159,
+        "f_empty_mean": 0.023916,
+        "f_full_mean": -0.1173,
         "mean_phi": {
-          "text": -0.1383,
-          "audio": 0.0218,
-          "vision": 0.1063
+          "text": -0.1932,
+          "audio": 0.0362,
+          "vision": 0.0157
         },
         "median_phi": {
-          "text": 0.2179,
-          "audio": 0.0241,
-          "vision": 0.0493
+          "text": 0.2152,
+          "audio": 0.0713,
+          "vision": 0.0351
         },
         "argmax_count": {
-          "text": 11,
-          "audio": 3,
-          "vision": 6
+          "text": 10,
+          "audio": 5,
+          "vision": 5
         },
         "argmax_share": {
-          "text": 0.55,
-          "audio": 0.15,
-          "vision": 0.3
+          "text": 0.5,
+          "audio": 0.25,
+          "vision": 0.25
         },
         "ranking": [
-          "vision",
           "audio",
+          "vision",
           "text"
         ],
         "ranking_merged_ties": [
           [
-            "vision"
+            "audio"
           ],
           [
-            "audio"
+            "vision"
           ],
           [
             "text"
           ]
         ],
-        "sum_phi_mean": -0.0101,
-        "f_full_minus_empty_mean": -0.0101,
+        "sum_phi_mean": -0.1412,
+        "f_full_minus_empty_mean": -0.1412,
         "efficiency_max_abs_error": 4.440892098500626e-16,
         "per_sample": [
           {
             "sample_id": "01",
             "phi": {
-              "text": 0.2278,
-              "audio": -0.0026,
-              "vision": 0.1854
+              "text": 0.4054,
+              "audio": 0.0593,
+              "vision": 0.0519
             },
-            "sum_phi": 0.4106,
-            "f_full_minus_empty": 0.4106
+            "sum_phi": 0.5166,
+            "f_full_minus_empty": 0.5166
           },
           {
             "sample_id": "02",
             "phi": {
-              "text": 0.3887,
-              "audio": -0.0293,
-              "vision": -0.1233
+              "text": 0.1185,
+              "audio": -0.1472,
+              "vision": -0.1424
             },
-            "sum_phi": 0.236,
-            "f_full_minus_empty": 0.236
+            "sum_phi": -0.1711,
+            "f_full_minus_empty": -0.1711
           },
           {
             "sample_id": "03",
             "phi": {
-              "text": -0.1769,
-              "audio": -0.0347,
-              "vision": 0.0919
+              "text": -0.4251,
+              "audio": 0.0834,
+              "vision": -0.1059
             },
-            "sum_phi": -0.1197,
-            "f_full_minus_empty": -0.1197
+            "sum_phi": -0.4476,
+            "f_full_minus_empty": -0.4476
           },
           {
             "sample_id": "04",
             "phi": {
-              "text": -1.5588,
-              "audio": 0.4508,
-              "vision": 0.9764
+              "text": -1.8829,
+              "audio": 0.3808,
+              "vision": 0.3599
             },
-            "sum_phi": -0.1316,
-            "f_full_minus_empty": -0.1316
+            "sum_phi": -1.1423,
+            "f_full_minus_empty": -1.1423
           },
           {
             "sample_id": "05",
             "phi": {
-              "text": 0.1325,
-              "audio": -0.0951,
-              "vision": 0.1817
+              "text": 0.3473,
+              "audio": -0.0996,
+              "vision": 0.3785
             },
-            "sum_phi": 0.2191,
-            "f_full_minus_empty": 0.2191
+            "sum_phi": 0.6262,
+            "f_full_minus_empty": 0.6262
           },
           {
             "sample_id": "06",
             "phi": {
-              "text": 0.5882,
-              "audio": 0.4023,
-              "vision": -0.5341
+              "text": 0.8014,
+              "audio": 0.232,
+              "vision": -0.4137
             },
-            "sum_phi": 0.4564,
-            "f_full_minus_empty": 0.4564
+            "sum_phi": 0.6197,
+            "f_full_minus_empty": 0.6197
           },
           {
             "sample_id": "07",
             "phi": {
-              "text": 0.9794,
-              "audio": 0.2179,
-              "vision": -0.01
+              "text": 1.3522,
+              "audio": -0.0708,
+              "vision": 0.1554
             },
-            "sum_phi": 1.1873,
-            "f_full_minus_empty": 1.1873
+            "sum_phi": 1.4368,
+            "f_full_minus_empty": 1.4368
           },
           {
             "sample_id": "08",
             "phi": {
-              "text": 0.7875,
-              "audio": 0.0507,
-              "vision": -0.1677
+              "text": 1.1891,
+              "audio": -0.0765,
+              "vision": -0.4019
             },
-            "sum_phi": 0.6705,
-            "f_full_minus_empty": 0.6705
+            "sum_phi": 0.7108,
+            "f_full_minus_empty": 0.7108
           },
           {
             "sample_id": "09",
             "phi": {
-              "text": -1.9397,
-              "audio": 0.0966,
-              "vision": -0.1348
+              "text": -2.302,
+              "audio": 0.2107,
+              "vision": -0.1005
             },
-            "sum_phi": -1.9779,
-            "f_full_minus_empty": -1.9779
+            "sum_phi": -2.1918,
+            "f_full_minus_empty": -2.1918
           },
           {
             "sample_id": "10",
             "phi": {
-              "text": -2.2737,
-              "audio": 0.1487,
-              "vision": 0.5514
+              "text": -2.5236,
+              "audio": 0.2297,
+              "vision": 0.0184
             },
-            "sum_phi": -1.5737,
-            "f_full_minus_empty": -1.5737
+            "sum_phi": -2.2756,
+            "f_full_minus_empty": -2.2756
           },
           {
             "sample_id": "11",
             "phi": {
-              "text": -1.1745,
-              "audio": 0.0629,
-              "vision": -0.1205
+              "text": -1.1486,
+              "audio": -0.1161,
+              "vision": 0.1562
             },
-            "sum_phi": -1.2321,
-            "f_full_minus_empty": -1.2321
+            "sum_phi": -1.1086,
+            "f_full_minus_empty": -1.1086
           },
           {
             "sample_id": "12",
             "phi": {
-              "text": -1.2106,
-              "audio": 0.1565,
-              "vision": 0.008
+              "text": -1.0207,
+              "audio": -0.2016,
+              "vision": -0.0508
             },
-            "sum_phi": -1.0461,
-            "f_full_minus_empty": -1.0461
+            "sum_phi": -1.2731,
+            "f_full_minus_empty": -1.2731
           },
           {
             "sample_id": "13",
             "phi": {
-              "text": 0.208,
-              "audio": -0.0813,
+              "text": 0.3118,
+              "audio": -0.1763,
               "vision": 0.0
             },
-            "sum_phi": 0.1266,
-            "f_full_minus_empty": 0.1266
+            "sum_phi": 0.1356,
+            "f_full_minus_empty": 0.1356
           },
           {
             "sample_id": "14",
             "phi": {
-              "text": -0.225,
-              "audio": -0.0592,
-              "vision": 0.7068
+              "text": -0.1499,
+              "audio": 0.1987,
+              "vision": 0.4356
             },
-            "sum_phi": 0.4227,
-            "f_full_minus_empty": 0.4227
+            "sum_phi": 0.4844,
+            "f_full_minus_empty": 0.4844
           },
           {
             "sample_id": "15",
             "phi": {
-              "text": 0.7174,
-              "audio": -0.0144,
-              "vision": 0.2495
+              "text": 0.8844,
+              "audio": 0.0955,
+              "vision": 0.1356
             },
-            "sum_phi": 0.9524,
-            "f_full_minus_empty": 0.9524
+            "sum_phi": 1.1155,
+            "f_full_minus_empty": 1.1155
           },
           {
             "sample_id": "16",
             "phi": {
-              "text": -2.2827,
-              "audio": -0.0312,
-              "vision": 0.0455
+              "text": -2.3104,
+              "audio": -0.1211,
+              "vision": -0.0953
             },
-            "sum_phi": -2.2683,
-            "f_full_minus_empty": -2.2683
+            "sum_phi": -2.5268,
+            "f_full_minus_empty": -2.5268
           },
           {
             "sample_id": "17",
             "phi": {
-              "text": 1.3834,
-              "audio": 0.1115,
-              "vision": 0.0531
+              "text": 1.662,
+              "audio": -0.0265,
+              "vision": 0.0798
             },
-            "sum_phi": 1.548,
-            "f_full_minus_empty": 1.548
+            "sum_phi": 1.7153,
+            "f_full_minus_empty": 1.7153
           },
           {
             "sample_id": "18",
             "phi": {
-              "text": 0.9492,
-              "audio": 0.0755,
-              "vision": -0.9237
+              "text": -0.3142,
+              "audio": 0.0853,
+              "vision": -0.4011
             },
-            "sum_phi": 0.101,
-            "f_full_minus_empty": 0.101
+            "sum_phi": -0.6299,
+            "f_full_minus_empty": -0.6299
           },
           {
             "sample_id": "19",
             "phi": {
-              "text": 0.9045,
-              "audio": -0.3623,
-              "vision": 0.6034
+              "text": 0.4361,
+              "audio": 0.0856,
+              "vision": 0.066
             },
-            "sum_phi": 1.1456,
-            "f_full_minus_empty": 1.1456
+            "sum_phi": 0.5877,
+            "f_full_minus_empty": 0.5877
           },
           {
             "sample_id": "20",
             "phi": {
-              "text": 0.8097,
-              "audio": -0.6266,
-              "vision": 0.4873
+              "text": 0.706,
+              "audio": 0.0989,
+              "vision": 0.1891
             },
-            "sum_phi": 0.6704,
-            "f_full_minus_empty": 0.6704
+            "sum_phi": 0.994,
+            "f_full_minus_empty": 0.994
           }
         ]
       },
       "agrees_with_lomo": {
         "top1": true,
-        "strict_list_equal": false,
+        "strict_list_equal": true,
         "shapley": [
           "text",
-          "audio",
-          "vision"
+          "vision",
+          "audio"
         ],
         "lomo": [
           "text",

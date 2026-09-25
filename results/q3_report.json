@@ -245,7 +245,7 @@
     }
   },
   "training": {
-    "best_epoch": 8,
+    "best_epoch": 4,
     "hyperparameters": {
       "hidden": 96,
       "epochs": 60,
@@ -258,25 +258,25 @@
       "patience": 12
     },
     "valid_metrics": {
-      "accuracy": 0.636,
-      "macro_f1": 0.6184,
-      "mae": 0.6214,
-      "pearson": 0.6282,
+      "accuracy": 0.6442,
+      "macro_f1": 0.6118,
+      "mae": 0.6074,
+      "pearson": 0.675,
       "n": 728
     }
   },
   "valid_evaluation": {
-    "accuracy": 0.636,
-    "macro_f1": 0.6184,
-    "mae": 0.6214,
-    "pearson": 0.6282,
+    "accuracy": 0.6442,
+    "macro_f1": 0.6118,
+    "mae": 0.6074,
+    "pearson": 0.675,
     "n": 728
   },
   "error_attribution": {
     "n_valid": 728,
-    "n_polarity_wrong": 265,
-    "mean_confidence_when_right": 0.8051,
-    "mean_confidence_when_wrong": 0.7154,
+    "n_polarity_wrong": 259,
+    "mean_confidence_when_right": 0.7565,
+    "mean_confidence_when_wrong": 0.6505,
     "per_class": {
       "negative": {
         "support": 206,
@@ -284,28 +284,28 @@
       },
       "neutral": {
         "support": 184,
-        "recall": 0.4946
+        "recall": 0.3913
       },
       "positive": {
         "support": 338,
-        "recall": 0.6893
+        "recall": 0.7633
       }
     },
     "confusion": [
       [
         139,
-        35,
-        32
+        29,
+        38
       ],
       [
-        32,
-        91,
-        61
+        29,
+        72,
+        83
       ],
       [
         36,
-        69,
-        233
+        44,
+        258
       ]
     ],
     "baselines": {
@@ -319,101 +319,119 @@
       }
     },
     "wrong_true_label_distribution": {
-      "1": 93,
+      "1": 112,
       "0": 67,
-      "2": 105
+      "2": 80
     },
     "wrong_pred_label_distribution": {
-      "2": 93,
-      "0": 68,
-      "1": 104
+      "2": 121,
+      "0": 65,
+      "1": 73
     }
+  },
+  "gate_constraint_ablation": {
+    "vision": {
+      "n_absent": 15,
+      "mean_gate_when_absent_unconstrained": 0.2351,
+      "mean_gate_overall_unconstrained": 0.1745,
+      "mean_gate_when_absent_constrained": 0.0,
+      "mean_gate_overall_constrained": 0.1697,
+      "n_absent_argmax_is_the_missing_modality_unconstrained": 0,
+      "n_absent_argmax_with_constrained_gate": 0
+    }
+  },
+  "input_conventions": {
+    "encoder_key_padding_mask": true,
+    "encoder_note": "编码器自注意力对不可观测位置施加 src_key_padding_mask；整路不可观测的样本另有避免全 -inf softmax 的分支",
+    "pooling_note": "时间注意力在 softmax 前把不可观测位置置为 -inf，整路不可用时分母为零亦有分支",
+    "content_candidate_rule": "文本剔除 [CLS]/[SEP]，语音与视觉取有效位；关键证据与遮蔽检验都只在候选位上选"
   },
   "faithfulness": {
     "k": 3,
     "n_random_trials": 5,
     "n_samples": 728,
-    "low_group_rule": "注意力最低的 k 个有效位置，且与最高 k 个位置不相交",
+    "low_group_rule": "注意力最低的 k 个候选位置，且与最高 k 个位置不相交",
+    "candidate_rule": "文本剔除 [CLS] 与 [SEP]，语音与视觉取逐位置全零判定的有效位；遮蔽动作本身仍是把该位置从可观测掩码上去掉",
     "expected_ordering": "top > rand > low",
     "per_modality": {
       "text": {
-        "mean_drop_topk": 0.3354203701019287,
-        "mean_drop_random": 0.07799110561609268,
-        "gap": 0.2574292719364166,
-        "share_topk_worse": 0.8653846153846154,
-        "n_samples_evaluated_low": 719,
-        "n_samples_excluded_low": 9,
-        "subset_mean_drop_topk": 0.33765971660614014,
-        "subset_mean_drop_random": 0.0767015814781189,
-        "subset_mean_drop_lowk": 0.01885249651968479,
-        "median_drop_topk": 0.19277672469615936,
-        "median_drop_random": 0.0421859472990036,
-        "subset_median_drop_lowk": 0.007336616516113281,
-        "gap_topk_minus_random": 0.26095813512802124,
-        "gap_random_minus_lowk": 0.057849086821079254,
-        "gap_topk_minus_lowk": 0.3188072144985199,
-        "share_topk_worse_than_lowk": 0.9401947148817803,
-        "share_random_between": 0.7649513212795549,
-        "share_random_below_lowk": 0.12100139082058414,
-        "attn_topk_mean": 0.20622752606868744,
-        "attn_lowk_mean": 0.008912130258977413,
-        "attn_gap": 0.19731539487838745,
-        "attn_concentration": 5.276931807153172,
-        "attn_topk_mass": 0.6186825633049011,
-        "attn_uniform_mass": 0.11724286021043591,
-        "n_valid_positions_mean": 25.587912087912088
+        "mean_drop_topk": 0.2886006832122803,
+        "mean_drop_random": 0.07252701371908188,
+        "gap": 0.2160736620426178,
+        "share_topk_worse": 0.8626373626373627,
+        "n_samples_evaluated_low": 713,
+        "n_samples_excluded_low": 15,
+        "subset_mean_drop_topk": 0.28879377245903015,
+        "subset_mean_drop_random": 0.06797916442155838,
+        "subset_mean_drop_lowk": 0.01957363449037075,
+        "median_drop_topk": 0.16799068450927734,
+        "median_drop_random": 0.040554024279117584,
+        "subset_median_drop_lowk": 0.010034024715423584,
+        "gap_topk_minus_random": 0.22081461548805237,
+        "gap_random_minus_lowk": 0.04840552806854248,
+        "gap_topk_minus_lowk": 0.26922014355659485,
+        "share_topk_worse_than_lowk": 0.9354838709677419,
+        "share_random_between": 0.7391304347826086,
+        "share_random_below_lowk": 0.1458625525946704,
+        "attn_topk_mean": 0.1701611578464508,
+        "attn_lowk_mean": 0.012068836949765682,
+        "attn_gap": 0.15809231996536255,
+        "attn_concentration": 4.013746432059413,
+        "attn_topk_mass": 0.5104835033416748,
+        "attn_uniform_mass": 0.12718378756114607,
+        "n_valid_positions_mean": 23.587912087912088
       },
       "audio": {
-        "mean_drop_topk": 0.015621527098119259,
-        "mean_drop_random": 0.011079557240009308,
-        "gap": 0.004541969858109951,
-        "share_topk_worse": 0.6304945054945055,
+        "mean_drop_topk": 0.012697112746536732,
+        "mean_drop_random": 0.00770576111972332,
+        "gap": 0.004991351626813412,
+        "share_topk_worse": 0.6689560439560439,
         "n_samples_evaluated_low": 712,
         "n_samples_excluded_low": 16,
-        "subset_mean_drop_topk": 0.014680334366858006,
-        "subset_mean_drop_random": 0.010093346238136292,
-        "subset_mean_drop_lowk": 0.011814180761575699,
-        "median_drop_topk": 0.010884158313274384,
-        "median_drop_random": 0.007798719219863415,
-        "subset_median_drop_lowk": 0.006587706506252289,
-        "gap_topk_minus_random": 0.004586988128721714,
-        "gap_random_minus_lowk": -0.0017208345234394073,
-        "gap_topk_minus_lowk": 0.0028661536052823067,
-        "share_topk_worse_than_lowk": 0.625,
-        "share_random_between": 0.35674157303370785,
-        "share_random_below_lowk": 0.4606741573033708,
-        "attn_topk_mean": 0.09944012761116028,
-        "attn_lowk_mean": 0.030173538252711296,
-        "attn_gap": 0.06926658749580383,
-        "attn_concentration": 2.339301683336169,
-        "attn_topk_mass": 0.29832038283348083,
+        "subset_mean_drop_topk": 0.011144161224365234,
+        "subset_mean_drop_random": 0.006080136634409428,
+        "subset_mean_drop_lowk": 0.008347676135599613,
+        "median_drop_topk": 0.0066902488470077515,
+        "median_drop_random": 0.004182863049209118,
+        "subset_median_drop_lowk": 0.004744887351989746,
+        "gap_topk_minus_random": 0.005064024589955807,
+        "gap_random_minus_lowk": -0.0022675395011901855,
+        "gap_topk_minus_lowk": 0.002796485088765621,
+        "share_topk_worse_than_lowk": 0.6067415730337079,
+        "share_random_between": 0.2752808988764045,
+        "share_random_below_lowk": 0.5912921348314607,
+        "attn_topk_mean": 0.08986616879701614,
+        "attn_lowk_mean": 0.033876266330480576,
+        "attn_gap": 0.05598990246653557,
+        "attn_concentration": 2.1140769324418933,
+        "attn_topk_mass": 0.26959851384162903,
         "attn_uniform_mass": 0.1275253999766437,
         "n_valid_positions_mean": 23.524725274725274
       },
       "vision": {
-        "mean_drop_topk": 0.043853092938661575,
-        "mean_drop_random": 0.016707099974155426,
-        "gap": 0.02714599296450615,
-        "share_topk_worse": 0.717032967032967,
+        "mean_drop_topk": 0.015194534324109554,
+        "mean_drop_random": 0.009168454445898533,
+        "gap": 0.006026079878211021,
+        "share_topk_worse": 0.6730769230769231,
         "n_samples_evaluated_low": 679,
         "n_samples_excluded_low": 49,
-        "subset_mean_drop_topk": 0.04234439134597778,
-        "subset_mean_drop_random": 0.013660392723977566,
-        "subset_mean_drop_lowk": 0.023900646716356277,
-        "median_drop_topk": 0.016675228253006935,
-        "median_drop_random": 0.007819116115570068,
-        "subset_median_drop_lowk": 0.00851595401763916,
-        "gap_topk_minus_random": 0.028683997690677643,
-        "gap_random_minus_lowk": -0.010240253992378712,
-        "gap_topk_minus_lowk": 0.018443744629621506,
-        "share_topk_worse_than_lowk": 0.6494845360824743,
-        "share_random_between": 0.34167893961708395,
-        "share_random_below_lowk": 0.5787923416789397,
-        "attn_topk_mean": 0.13056480884552002,
-        "attn_lowk_mean": 0.02801617793738842,
-        "attn_gap": 0.10254862904548645,
-        "attn_concentration": 2.903990913223434,
-        "attn_topk_mass": 0.39169442653656006,
+        "subset_mean_drop_topk": 0.010890730656683445,
+        "subset_mean_drop_random": 0.004747311118990183,
+        "subset_mean_drop_lowk": 0.0090804947540164,
+        "median_drop_topk": 0.004854381084442139,
+        "median_drop_random": 0.0027187704108655453,
+        "subset_median_drop_lowk": 0.003455638885498047,
+        "gap_topk_minus_random": 0.006143419537693262,
+        "gap_random_minus_lowk": -0.0043331836350262165,
+        "gap_topk_minus_lowk": 0.0018102359026670456,
+        "share_topk_worse_than_lowk": 0.5773195876288659,
+        "share_random_between": 0.24005891016200295,
+        "share_random_below_lowk": 0.6509572901325479,
+        "attn_topk_mean": 0.11052557080984116,
+        "attn_lowk_mean": 0.03322381526231766,
+        "attn_gap": 0.0773017555475235,
+        "attn_concentration": 2.4582830254848185,
+        "attn_topk_mass": 0.33157670497894287,
         "attn_uniform_mass": 0.13488142292490118,
         "n_valid_positions_mean": 22.24175824175824
       }
@@ -421,31 +439,31 @@
   },
   "gate_vs_lomo": {
     "n": 20,
-    "agree": 15,
-    "agreement_rate": 0.75
+    "agree": 17,
+    "agreement_rate": 0.85
   },
   "attachment4_dominant_modality": {
-    "text": 18,
-    "vision": 2
+    "text": 19,
+    "vision": 1
   },
   "attachment4_polarity": {
-    "neutral": 7,
-    "positive": 7,
-    "negative": 6
+    "neutral": 4,
+    "positive": 9,
+    "negative": 7
   },
   "evidence_time_source": {
     "method": "word-level forced alignment (q1_alignment.monotonic_align)",
     "n_aligned": 20,
     "rejected_alternative": "j*D/50 uniform split",
-    "mean_abs_difference_s": 1.9682,
-    "max_abs_difference_s": 3.6271,
+    "mean_abs_difference_s": 1.587,
+    "max_abs_difference_s": 3.5953,
     "worst_sample": {
       "sample_id": "15",
-      "aligned_start_s": 5.68,
-      "uniform_start_s": 2.053,
-      "ratio": 2.766
+      "aligned_start_s": 6.382,
+      "uniform_start_s": 2.787,
+      "ratio": 2.29
     },
-    "why": "实测 20/20 条满足「text_bert 注意力掩码长度 = 音频有效位置数 + 2」且偏移恒为 2（corr=1.000），对应 config.yaml 的 content_slots=48（首尾各留一个特殊 token）；音频有效位置数在 11~48 之间变化而非恒为 50，说明该轴是词片段（word-piece）轴，不是 50 个等长时间片",
+    "why": "实测 20/20 条满足「text_bert 注意力掩码长度 = 音频有效位置数 + 2」且偏移恒为 2（corr=1.000），对应 config_q3.yaml 的 content_slots=48（首尾各留一个特殊 token）；音频有效位置数在 11~48 之间变化而非恒为 50，说明该轴是子词（word-piece）轴，不是 50 个等长时间片；子词数由重建的 WordPiece 序列逐位核对",
     "axis_evidence": {
       "invariant": "n_text_mask == n_valid_audio_positions + 2",
       "offset_min": 2,
@@ -456,22 +474,33 @@
       "n_valid_positions_range": [
         11,
         48
-      ]
+      ],
+      "n_subwords_range_att4": [
+        11,
+        48
+      ],
+      "token_map_verified_att4": "20/20",
+      "position_axis": "子词轴：位置 0 = [CLS]，1..n = 转写文本的 n 个子词，n+1..48 = 填充，49 = [SEP]；音频与视觉在第 0 位与末位结构性为零",
+      "content_candidates": "文本：可观测掩码去掉 [CLS] 与 [SEP]；语音/视觉：逐位置全通道全零判定的有效位",
+      "subword_to_word": "bert-base-uncased WordPiece（词表 30522 行，钉在 work/bert-base-uncased_vocab.txt），重建的 token id 与数据自带 text_bert[0] 逐位比对通过"
     },
-    "ratio_to_whitespace_words": 1.2002,
+    "ratio_to_whitespace_words": {
+      "definition": "附件4 全部 20 条的内容子词总数 / 空格切分的词总数",
+      "value": 1.1701
+    },
     "uniform_split_error": {
-      "mean_abs_s": 1.9682,
-      "max_abs_s": 3.6271,
+      "mean_abs_s": 1.587,
+      "max_abs_s": 3.5953,
       "worst_sample": "15",
-      "ratio": 2.766
+      "ratio": 2.29
     },
-    "caveat": "本机无 BERT 分词器，子词→词为按比例近似；但每个词的时间来自真实强制对齐"
+    "caveat": "子词→词映射由 bert-base-uncased WordPiece 重建并与数据自带 token id 逐位核对（附件4 20/20、附件2 抽样 400/400 通过），因此该映射是精确的；每个词的时间来自约束式强制对齐，属估计量，证据时间表述为近似定位、需回看确认"
   },
   "notes": [
     "test 划分未参与任何模型选择（与附件3/4 存在内容重叠）",
     "文本用 text_bert 的 0/1 通道做掩码；text 填充值非零，不可用 x==0 检测",
     "audio/vision 逐维标准化，统计量仅在 train 上拟合",
-    "证据时间来自词级强制对齐；子词→词映射为近似，报告中已标注",
+    "证据时间来自词级强制对齐；子词→词映射由 WordPiece 重建并与数据自带 token id 逐位核对",
     "答案解释为内在可解释（注意力+门控），并用留一扰动与遮蔽检验佐证"
   ]
 }

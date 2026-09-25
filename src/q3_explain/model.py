@@ -25,9 +25,16 @@ Architecture notes
 ------------------
 * **One encoder per modality.**  Sharing an encoder would prevent separating
   per-modality contributions, which is the whole point.
-* **Masks are applied twice**: invalid steps are zeroed on input AND set to
-  ``-inf`` before the attention softmax.  Zeroing alone is not enough -- a zero
-  vector still produces a non-zero attention score.
+* **Masks are applied three times**, and all three are needed:
+  1. invalid steps are zeroed on input;
+  2. the encoder's self-attention takes ``src_key_padding_mask`` so that
+     padding keys cannot be read by any query -- zeroing alone is not enough,
+     because a zero input still becomes a non-zero vector after the linear
+     projection and the learned positional encoding, and it would then be mixed
+     into the context of valid positions;
+  3. the temporal attention sets invalid positions to ``-inf`` before the
+     softmax, so they cannot enter the pooled summary.
+  Position indices are never compressed or reordered by masking.
 * **Polarity and intensity share the fused vector but have separate heads**,
   matching the problem's split between classification and regression.
 """
@@ -61,11 +68,31 @@ class ModalityEncoder(nn.Module):
         self.encoder = nn.TransformerEncoder(layer, num_layers=1)
         self.norm = nn.LayerNorm(hidden)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor,
+                mask: torch.Tensor | None = None) -> torch.Tensor:
+        """x: (B,T,C)  mask: (B,T) bool, True = observable step.
+
+        The key-padding mask is what stops an unobservable position from being
+        read as a key by any query.  Without it the zeroed input leaks into the
+        context of every valid position, because the projection and the
+        positional encoding both make a zero input non-zero.
+        """
         h = self.proj(x) + self.pos[:, : x.shape[1]]
-        # no key_padding_mask here: padding is already zeroed and the attention
-        # pooling below masks it explicitly
-        h = self.encoder(h)
+        if mask is None:
+            h = self.encoder(h)
+            return self.norm(h)
+
+        key_pad = ~mask                       # True = ignore this key
+        # A sample whose modality is entirely unobservable would give every
+        # query an all-masked key set, and softmax over an all -inf row is NaN.
+        # Such a row has no valid query either, and its output is discarded by
+        # the pooling mask below, so it is safe (and NaN-free) to let it attend
+        # to itself.  The invariance test checks that changing the payload of
+        # an unobservable position still cannot move the prediction.
+        all_pad = key_pad.all(dim=1, keepdim=True)
+        if bool(all_pad.any()):
+            key_pad = torch.where(all_pad, torch.zeros_like(key_pad), key_pad)
+        h = self.encoder(h, src_key_padding_mask=key_pad)
         return self.norm(h)
 
 
@@ -131,11 +158,14 @@ class ModalityAttributionNet(nn.Module):
         self.head_intensity = nn.Linear(hidden, 1)
 
     def forward(self, batch: dict[str, torch.Tensor],
-                masks: dict[str, torch.Tensor]) -> Output:
+                masks: dict[str, torch.Tensor],
+                gate_constraint: bool = True) -> Output:
+        """gate_constraint=False reproduces the pre-constraint ablation used in
+        §7.2.4 (average gate weight handed to an entirely absent modality)."""
         pooled: dict[str, torch.Tensor] = {}
         attn: dict[str, torch.Tensor] = {}
         for m in self.modalities:
-            h = self.encoders[m](batch[m])
+            h = self.encoders[m](batch[m], masks[m])
             z, a = self.attentions[m](h, masks[m])
             pooled[m] = z
             attn[m] = a
@@ -145,11 +175,19 @@ class ModalityAttributionNet(nn.Module):
 
         # A modality with no valid step must receive zero contribution.  Without
         # this the gate read a *zeroed-out* summary and, measured on attachment
-        # 2's validation split, handed vision 0.287 on the 15 samples where
-        # vision is entirely absent -- MORE than its 0.227 average.  Reporting
+        # 2's validation split, handed vision 0.289 on the 15 samples where
+        # vision is entirely absent -- MORE than its 0.223 average.  Reporting
         # "主要参考模态 = vision" for a sample that has no vision is nonsense, so
         # availability is enforced rather than left for the optimiser to learn.
         avail = torch.stack([masks[m].any(dim=1) for m in self.modalities], dim=1)
+        if not gate_constraint:
+            gate = torch.softmax(logits, dim=-1)
+            stacked = torch.stack([pooled[m] for m in self.modalities], dim=1)
+            fused = torch.einsum("bm,bmh->bh", gate, stacked)
+            fused = self.fuse_norm(self.dropout(fused))
+            return Output(polarity_logits=self.head_polarity(fused),
+                          intensity=self.head_intensity(fused).squeeze(-1),
+                          gate=gate, attention=attn, pooled=pooled)
         neg = torch.finfo(logits.dtype).min
         logits = logits.masked_fill(~avail, neg)
         # a sample with nothing available would softmax to NaN; fall back to

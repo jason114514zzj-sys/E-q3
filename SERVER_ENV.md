@@ -99,7 +99,7 @@ python -m q3_explain.run_all --epochs 60      # V100 上约 1 分钟
 |---|---|
 | 运行设备 | `cuda`（Tesla V100-PCIE-16GB） |
 | 最佳 epoch / 早停 | 8 / 第 20 轮 |
-| 验证集指标 | Accuracy 0.6360 · Macro-F1 0.6184 · MAE 0.6214 · Pearson 0.6282 |
+| 验证集指标 | Accuracy 0.6442 · Macro-F1 0.6118 · MAE 0.6074 · Pearson 0.6750（q3 v1.1.0 重训后） |
 | 训练耗时 | 约 1 分钟（60 轮上限，实际 20 轮早停） |
 | 附带的 ffmpeg / ffprobe | conda 环境内 `mosei/bin/`（由 `imageio-ffmpeg` / `opencv-python-headless` 提供），用于附件4 的 16 kHz 解码与真实时长探测 |
 | 中文字体 | `Noto Sans CJK JP`（缺失时 matplotlib 只发 Warning，图内中文会静默变成方框） |

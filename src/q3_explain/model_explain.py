@@ -69,6 +69,11 @@ class Explanation:
     time_source: str = "uniform_estimate"
     evidence_word: str = ""
     evidence_word_index: int = -1
+    # every word the delivered evidence window lands on, and whether the
+    # subword -> word mapping was checked against the shipped token ids
+    evidence_word_indices: list[int] = field(default_factory=list)
+    evidence_words: list[str] = field(default_factory=list)
+    mapping_verified: bool = False
     naive_start: float = 0.0
     naive_end: float = 0.0
 
@@ -98,6 +103,9 @@ class Explanation:
             "time_source": self.time_source,
             "evidence_word": self.evidence_word,
             "evidence_word_index": int(self.evidence_word_index),
+            "evidence_word_indices": [int(x) for x in self.evidence_word_indices],
+            "evidence_words": list(self.evidence_words),
+            "mapping_verified": bool(self.mapping_verified),
             "naive_start": round(float(self.naive_start), 3),
             "naive_end": round(float(self.naive_end), 3),
         }
@@ -166,7 +174,24 @@ def leave_one_modality_out(model: ModalityAttributionNet, sp: Split, device,
     return drops
 
 
-def _span_around(peak: int, length: int = 3) -> list[int]:
+def _span_around(peak: int, length: int = 3,
+                 valid: np.ndarray | None = None) -> list[int]:
+    """The evidence window: ``length`` positions around the attention peak.
+
+    Without ``valid`` this is the contiguous window ``[peak-1, peak+1]`` clipped
+    to the sequence.  With ``valid`` the window is additionally restricted to
+    *reportable* positions, so the delivered evidence can never contain a
+    position a reader cannot look up in the recording: for text that drops
+    ``[CLS]`` and ``[SEP]``.  At the edge of the candidate set the window slides
+    inwards instead of falling off, so it still holds ``length`` positions
+    whenever that many candidates exist.
+    """
+    if valid is not None:
+        cand = np.flatnonzero(valid).tolist()
+        if not cand:
+            return [peak]
+        cand.sort(key=lambda p: (abs(p - peak), p))
+        return sorted(cand[:length])
     half = length // 2
     lo = max(0, peak - half)
     hi = min(PROBLEM_MAX_POSITIONS - 1, lo + length - 1)
@@ -199,12 +224,15 @@ def build_explanations(model: ModalityAttributionNet, sp: Split, device,
         dom = max(w, key=w.get)
 
         # evidence comes from the dominant modality's attention.  Masked-out
-        # positions must never win, so restrict to that modality's valid steps.
+        # positions must never win, so restrict to that modality's candidate
+        # steps.  For text the candidate set also drops [CLS] and [SEP]: a
+        # special token is not something a reader can look up in the recording,
+        # so it may not be reported as key evidence.
         att = fwd["attention"][dom][i].copy()
-        valid = sp.masks[dom][i]
+        valid = sp.content_of(dom)[i]
         att = np.where(valid, att, -np.inf)
         peak = int(np.argmax(att)) if np.isfinite(att).any() else 0
-        span = _span_around(peak)
+        span = _span_around(peak, valid=valid)
 
         dur = float(sp.durations[i]) if sp.durations is not None else 1.0
         step = dur / PROBLEM_MAX_POSITIONS
@@ -213,10 +241,24 @@ def build_explanations(model: ModalityAttributionNet, sp: Split, device,
         tmap = time_map.get(sid) if time_map else None
         n_tokens = int(sp.masks["text"][i].sum())   # includes [CLS] and [SEP]
         content_tokens = max(n_tokens - 2, 1)
+        word_indices: list[int] = []
+        evidence_words: list[str] = []
         if tmap is not None and tmap.words:
-            word_idx = tmap.word_for_token(peak, content_tokens)
-            start_s, end_s = tmap.span(word_idx)
-            evidence_word = tmap.words[word_idx].word
+            # The delivered evidence is the three consecutive positions around
+            # the attention peak.  Several subwords can belong to one word, and
+            # three subwords can straddle a word boundary, so the reported
+            # evidence is the set of *words* those positions land on, and the
+            # reported time span is the union of their spans.
+            word_indices = tmap.words_for_positions(span)
+            evidence_words = [tmap.words[k].word for k in word_indices]
+            if not word_indices:
+                word_indices = [tmap.word_for_token(peak, content_tokens)]
+                evidence_words = [tmap.words[word_indices[0]].word]
+            start_s, end_s = tmap.span_of_words(word_indices)
+            if end_s <= start_s:                 # single degenerate span
+                start_s, end_s = tmap.span(word_indices[0])
+            word_idx = int(word_indices[0])
+            evidence_word = evidence_words[0]
             time_source = "forced_alignment"
         else:
             word_idx = -1
@@ -234,7 +276,7 @@ def build_explanations(model: ModalityAttributionNet, sp: Split, device,
 
         peaks = {}
         for m in MODALITIES:
-            a = np.where(sp.masks[m][i], fwd["attention"][m][i], -np.inf)
+            a = np.where(sp.content_of(m)[i], fwd["attention"][m][i], -np.inf)
             if np.isfinite(a).any():
                 peaks[m] = np.argsort(-a)[:top_k_positions].tolist()
 
@@ -284,6 +326,9 @@ def build_explanations(model: ModalityAttributionNet, sp: Split, device,
             time_source=time_source,
             evidence_word=evidence_word,
             evidence_word_index=word_idx,
+            evidence_word_indices=list(word_indices),
+            evidence_words=list(evidence_words),
+            mapping_verified=bool(tmap is not None and tmap.exact_mapping),
             naive_start=naive_start,
             naive_end=naive_end,
         ))
@@ -330,7 +375,9 @@ def faithfulness_test(model: ModalityAttributionNet, sp: Split, device,
         "k": k,
         "n_random_trials": n_random,
         "n_samples": n,
-        "low_group_rule": "注意力最低的 k 个有效位置，且与最高 k 个位置不相交",
+        "low_group_rule": "注意力最低的 k 个候选位置，且与最高 k 个位置不相交",
+        "candidate_rule": ("文本剔除 [CLS] 与 [SEP]，语音与视觉取逐位置全零判定的有效位；"
+                           "遮蔽动作本身仍是把该位置从可观测掩码上去掉"),
         "expected_ordering": "top > rand > low",
         "per_modality": {},
     }
@@ -354,7 +401,9 @@ def faithfulness_test(model: ModalityAttributionNet, sp: Split, device,
             top_pick: list[np.ndarray] = []
             low_pick: list[np.ndarray] = []
             for i in idx:
-                valid = np.flatnonzero(sp.masks[m][i])
+                # candidate positions: text drops [CLS]/[SEP], so a special token
+                # can never be picked as (or excluded from) an evidence position
+                valid = np.flatnonzero(sp.content_of(m)[i])
                 n_valid[i] = valid.size
                 if valid.size == 0:
                     top_pick.append(valid)
@@ -400,7 +449,7 @@ def faithfulness_test(model: ModalityAttributionNet, sp: Split, device,
             for _ in range(n_random):
                 rm = masks[m].clone()
                 for r, i in enumerate(idx):
-                    valid = np.flatnonzero(sp.masks[m][i])
+                    valid = np.flatnonzero(sp.content_of(m)[i])
                     if valid.size:
                         pick = rng.choice(valid, size=min(k, valid.size),
                                           replace=False)

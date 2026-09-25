@@ -49,6 +49,15 @@ class Split:
     ids: list[str] = field(default_factory=list)
     raw_text: list[str] = field(default_factory=list)
     durations: np.ndarray | None = None   # (N,) seconds, attachment 4 only
+    # modality -> (N, 50) bool: positions that may be reported as evidence.
+    # For text this is ``masks["text"]`` minus the two special tokens.
+    content: dict[str, np.ndarray] = field(default_factory=dict)
+
+    def content_of(self, modality: str) -> np.ndarray:
+        """Candidate evidence positions; falls back to the observability mask."""
+        if modality in self.content:
+            return self.content[modality]
+        return self.masks[modality]
 
     def __len__(self) -> int:
         return len(self.intensity)
@@ -68,6 +77,33 @@ def _text_mask_from_bert(bert: np.ndarray) -> np.ndarray:
 def _zero_pad_mask(x: np.ndarray) -> np.ndarray:
     """(N, 50) bool: True where the step carries signal."""
     return ~np.all(np.asarray(x) == 0, axis=-1)
+
+
+def content_masks(masks: dict[str, np.ndarray]) -> dict[str, np.ndarray]:
+    """Positions that may be reported as evidence.
+
+    The text mask also marks the two special tokens.  A special token is not
+    something a human can look up in the recording, so the first and the last
+    observable position are removed from the *candidate* set; the observability
+    mask itself is left untouched, because validity and reportability are
+    different questions.  Audio and vision carry no special token, so their
+    candidate set is the observability mask itself.
+    """
+    out: dict[str, np.ndarray] = {}
+    for mod, m in masks.items():
+        m = np.asarray(m)
+        if mod != "text":
+            out[mod] = m.copy()
+            continue
+        c = m.copy()
+        for i in range(c.shape[0]):
+            idx = np.flatnonzero(m[i])
+            if idx.size == 0:
+                continue
+            c[i, idx[0]] = False
+            c[i, idx[-1]] = False
+        out[mod] = c
+    return out
 
 
 def labels_from_regression(reg: np.ndarray) -> np.ndarray:
@@ -111,11 +147,12 @@ def load_attachment2(data_root: Path) -> dict[str, Split]:
         else:
             pol = labels_from_regression(reg)
 
+        m2 = {"text": tm,
+              "audio": _zero_pad_mask(audio),
+              "vision": _zero_pad_mask(vision)}
         splits[name] = Split(
             name=name, text=text, audio=audio, vision=vision,
-            masks={"text": tm,
-                   "audio": _zero_pad_mask(audio),
-                   "vision": _zero_pad_mask(vision)},
+            masks=m2, content=content_masks(m2),
             polarity=pol, intensity=reg.ravel(),
             ids=[str(x) for x in s["id"]],
             raw_text=[str(x) for x in s.get("raw_text", [""] * len(reg))],
@@ -166,12 +203,13 @@ def load_attachment4(data_root: Path) -> Split:
         if np.isfinite(vals).all():
             durations = np.asarray(vals, dtype=np.float32)
 
+    m4 = {"text": np.stack(tmask),
+          "audio": _zero_pad_mask(audio),
+          "vision": _zero_pad_mask(vision)}
     return Split(
         name="att4",
         text=np.stack(text), audio=audio, vision=vision,
-        masks={"text": np.stack(tmask),
-               "audio": _zero_pad_mask(audio),
-               "vision": _zero_pad_mask(vision)},
+        masks=m4, content=content_masks(m4),
         polarity=np.full(len(pkls), -1, dtype=np.int64),   # unlabelled
         intensity=np.full(len(pkls), np.nan, dtype=np.float32),
         ids=ids, raw_text=raws, durations=durations,

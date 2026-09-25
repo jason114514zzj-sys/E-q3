@@ -9,5 +9,15 @@
   "driver": "580.178.04",
   "os": "Ubuntu 24.04.5 LTS",
   "ffmpeg_ffprobe": "conda 环境 bin 内随 imageio-ffmpeg / opencv-python-headless 提供",
-  "note": "整题提交涉及两套环境：第一问、第三问在本环境完成；第二问在 RTX 4090 + Python 3.13 + torch 2.10.0+cu130 上完成。"
+  "tokenizer": {
+    "name": "bert-base-uncased WordPiece",
+    "vocab_file": "vocab/bert-base-uncased_vocab.txt",
+    "vocab_bytes": 231508,
+    "vocab_sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3",
+    "vocab_lines": 30522,
+    "license": "Apache-2.0 (Google BERT release)",
+    "implementation": "src/q3_explain/wordpiece.py（自实现 BasicTokenizer + 贪心最长匹配 WordPiece，不依赖 transformers/tokenizers）",
+    "verification": "重建 token id 与数据自带 text_bert[0] 逐位比对：附件4 20/20、附件2 训练划分抽样 400/400"
+  },
+  "note": "整题提交涉及两套环境：第一问、第三问在本环境完成；第二问在 RTX 4090 + Python 3.13 + torch 2.10.0+cu130 上完成。q3 v1.1.0 的编码器键掩码与精确子词→词映射均在本环境重训重算。"
 }

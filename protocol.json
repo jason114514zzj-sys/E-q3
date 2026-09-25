@@ -1,6 +1,13 @@
 {
   "scope": "问题三 可解释性多模态情感预测（仅第三问；不依赖第一问特征与第二问模型）",
-  "task_reference": ["段028", "段029", "段030", "段031", "段049-053", "段055-057"],
+  "task_reference": [
+    "段028",
+    "段029",
+    "段030",
+    "段031",
+    "段049-053",
+    "段055-057"
+  ],
   "feature_version": "aligned_50",
   "input_interface": {
     "text": "附件2 官方预计算 text (50, 768)",
@@ -10,10 +17,26 @@
     "note": "附件3 未提供 text 列，第二问因此改走 text_bert + 冻结编码器；三问在各自的训练↔推理之间保持同一接口（段018）"
   },
   "splits": {
-    "train": {"source": "附件2 aligned_50.pkl -> train", "n": 3395, "use": "学习模型参数"},
-    "valid": {"source": "附件2 aligned_50.pkl -> valid", "n": 728, "use": "选择模型结构、超参数与决策阈值（段031）"},
-    "test": {"source": "附件2 aligned_50.pkl -> test", "n": 727, "use": "不参与任何选择；仅用于核对不泄漏"},
-    "inference": {"source": "附件4 对齐版 20 条 pkl", "n": 20, "use": "冻结后推理与解释（段030）"}
+    "train": {
+      "source": "附件2 aligned_50.pkl -> train",
+      "n": 3395,
+      "use": "学习模型参数"
+    },
+    "valid": {
+      "source": "附件2 aligned_50.pkl -> valid",
+      "n": 728,
+      "use": "选择模型结构、超参数与决策阈值（段031）"
+    },
+    "test": {
+      "source": "附件2 aligned_50.pkl -> test",
+      "n": 727,
+      "use": "不参与任何选择；仅用于核对不泄漏"
+    },
+    "inference": {
+      "source": "附件4 对齐版 20 条 pkl",
+      "n": 20,
+      "use": "冻结后推理与解释（段030）"
+    }
   },
   "seed": 20260924,
   "seed_count": 1,
@@ -44,8 +67,15 @@
       "hard_constraint": true,
       "used_for": "模态作用程度 / 主要参考模态"
     },
-    "fusion": {"weighted_sum": true, "dropout": 0.1, "norm": "LayerNorm"},
-    "heads": {"polarity": "Linear(96,3)", "intensity": "Linear(96,1)"}
+    "fusion": {
+      "weighted_sum": true,
+      "dropout": 0.1,
+      "norm": "LayerNorm"
+    },
+    "heads": {
+      "polarity": "Linear(96,3)",
+      "intensity": "Linear(96,1)"
+    }
   },
   "loss": {
     "classification": "CrossEntropyLoss(weight = inverse class frequency)",
@@ -74,19 +104,55 @@
   },
   "explainability": {
     "type": "内在可解释（结构直接产出），非事后解释（SHAP/LIME）",
-    "outputs": ["polarity", "intensity", "dominant_modality", "modality_weights", "evidence_start/end + evidence_modality"],
+    "outputs": [
+      "polarity",
+      "intensity",
+      "dominant_modality",
+      "modality_weights",
+      "evidence_start/end + evidence_modality"
+    ],
     "reproducibility_checks": {
       "faithfulness": {
         "protocol": "三组遮蔽：注意力峰值 3 位 / 随机 3 个有效位置（重复 5 次）/ 注意力低谷 3 位（与峰值组不相交），比较预测强度变化量",
-        "group_means": {"text": {"top": 0.3377, "rand": 0.0767, "low": 0.0189}, "vision": {"top": 0.0423, "rand": 0.0137, "low": 0.0239}, "audio": {"top": 0.0147, "rand": 0.0101, "low": 0.0118}},
-        "strict_triple_ordering_share": {"text": 0.765, "vision": 0.342, "audio": 0.357},
-        "attn_concentration_vs_uniform": {"text": 5.28, "vision": 2.90, "audio": 2.34},
+        "group_means": {
+          "text": {
+            "top": 0.3377,
+            "rand": 0.0767,
+            "low": 0.0189
+          },
+          "vision": {
+            "top": 0.0423,
+            "rand": 0.0137,
+            "low": 0.0239
+          },
+          "audio": {
+            "top": 0.0147,
+            "rand": 0.0101,
+            "low": 0.0118
+          }
+        },
+        "strict_triple_ordering_share": {
+          "text": 0.765,
+          "vision": 0.342,
+          "audio": 0.357
+        },
+        "attn_concentration_vs_uniform": {
+          "text": 5.28,
+          "vision": 2.9,
+          "audio": 2.34
+        },
         "conclusion": "只有 text 通过严格三段序检验；vision/audio 只作参考展示，不据以解释单条样本"
       },
       "leave_one_modality_out": {
         "protocol": "整条移除某模态，测量预测变化量；与门控自述比对",
         "agreement": "15/20",
-        "disagreements_documented": ["05", "06", "14", "19", "20"]
+        "disagreements_documented": [
+          "05",
+          "06",
+          "14",
+          "19",
+          "20"
+        ]
       }
     }
   },
@@ -95,12 +161,25 @@
     "implementation": "src/q3_explain/evidence_time.py + src/q1_alignment/monotonic_align.py",
     "audio_frontend": "ffmpeg 解码为 16 kHz 单声道，10 ms 一跳 RMS 能量包络",
     "duration_source": "ffprobe（mp4 头部 nb_frames 元数据不可信，100 条中 90 条虚报）",
-    "constraints": ["首词起于 0.0", "末词止于时长 D", "严格单调", "语速 1-6 词/秒", "边界向能量谷吸附"],
-    "measured": {"coverage": 1.0, "coverage_ok": "20/20", "rate_wps_range": [1.80, 4.01]},
+    "constraints": [
+      "首词起于 0.0",
+      "末词止于时长 D",
+      "严格单调",
+      "语速 1-6 词/秒",
+      "边界向能量谷吸附"
+    ],
+    "measured": {
+      "coverage": 1.0,
+      "coverage_ok": "20/20",
+      "rate_wps_range": [
+        1.8,
+        4.01
+      ]
+    },
     "forbidden": "j*D/50 均匀切分",
-    "forbidden_reason": "实测这 50 个位置是词片段轴而非等长时间片：20/20 条满足「text_bert 掩码长度 = 音频有效位置数 + 2」（偏移恒为 2，corr = 1.000），音频有效位置数在 11~48 间变化、上限 48 与 content_slots 吻合。均匀切分偏差均值 1.968 s、最大 3.627 s，最差样本 2.77 倍。",
+    "forbidden_reason": "实测这 50 个位置是子词（word-piece）轴而非等长时间片：20/20 条满足「text_bert 掩码长度 = 音频有效位置数 + 2」（偏移恒为 2，corr = 1.000），音频有效位置数在 11~48 间变化、上限 48 与 content_slots 吻合。两种做法的差异均值 1.587 s、最大 3.595 s，最差样本 2.29 倍。",
     "determinism": "词边界在对象构造时即 round 到 4 位小数（与 JSON 存储精度一致），保证「首次构建」与「复用缓存」两条路径产出同一份 CSV",
-    "residual_limitation": "本机无法获取 BERT 分词器，子词→词为按比例近似（比值约 1.2，通常误差 ≤1 词）"
+    "residual_limitation": "子词→词为精确映射：bert-base-uncased WordPiece 重建的 token 序列与数据自带 text_bert[0] 逐位一致（附件4 20/20、附件2 抽样 400/400）"
   },
   "outputs": {
     "submission": "results/附件4_预测与解释结果.csv",
@@ -111,18 +190,31 @@
     "report": "results/q3_report.json",
     "time_map": "results/att4_time_map.json",
     "position_time_map": "results/position_time_map.csv",
-    "figures": ["figures/q3_attention_profiles.png", "figures/q3_modality_weights.png", "figures/q3_gate_vs_lomo.png", "figures/q3_faithfulness.png"]
+    "figures": [
+      "figures/q3_attention_profiles.png",
+      "figures/q3_modality_weights.png",
+      "figures/q3_gate_vs_lomo.png",
+      "figures/q3_faithfulness.png"
+    ]
   },
   "validation_metrics_development_only": {
     "accuracy": 0.636,
-    "macro_f1": 0.6184,
-    "mae": 0.6214,
-    "pearson": 0.6282,
+    "macro_f1": 0.6118,
+    "mae": 0.6074,
+    "pearson": 0.675,
     "n": 728,
-    "baselines": {"majority": {"accuracy": 0.4643, "macro_f1": 0.2114}, "train_mean_regression": {"mae": 0.7808}}
+    "baselines": {
+      "majority": {
+        "accuracy": 0.4643,
+        "macro_f1": 0.2114
+      },
+      "train_mean_regression": {
+        "mae": 0.7808
+      }
+    }
   },
   "limitations": [
-    "证据时间来自自建词级强制对齐，不是官方逐词时间戳；子词→词为按比例近似。",
+    "证据时间来自自建词级强制对齐，不是官方逐词时间戳；子词→词映射经词表逐位核对，词的时间仍属估计量，交付时表述为近似定位、需回看确认。",
     "附件4 有 5/20 与附件2 test 划分逐值一致，属同源留出样本而非独立测试集；落在 valid 的为 0 条。",
     "附件4 样本 13 的 vision 整条为零，与题面段017「三模态信息完整」矛盾；门控硬约束已处理。",
     "验证集用于早停与最佳 epoch 选择，全部指标属开发评价。",
