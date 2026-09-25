@@ -28,19 +28,19 @@ python -m q3_explain.run_all --epochs 60
 
 | 题面依据 | 材料说明 | 服务器交付树路径 | 本仓库路径 | 字节 | sha256(前16) |
 |---|---|---|---|---:|---|
-| 段055「核心代码」 | 问题三核心代码（7 模块）：`__init__.py`、`audit_extra.cpython-313.pyc`、`data.cpython-313.pyc`、`evidence_time.cpython-313.pyc`、`invariance_check.cpython-313.pyc`、`model.cpython-313.pyc`、`model_explain.cpython-313.pyc`、`run_all.cpython-313.pyc`、`shapley.cpython-313.pyc`、`train.cpython-313.pyc`、`wordpiece.cpython-313.pyc`、`audit_extra.py`、`data.py`、`evidence_time.py`、`invariance_check.py`、`model.py`、`model_explain.py`、`run_all.py`、`shapley.py`、`train.py`、`wordpiece.py` | `src/q3_explain/` | `src/q3_explain/`（21 文件） | 388352 | — |
+| 段055「核心代码」 | 问题三核心代码（7 模块）：`__init__.py`、`audit_extra.cpython-313.pyc`、`data.cpython-313.pyc`、`evidence_time.cpython-313.pyc`、`invariance_check.cpython-313.pyc`、`model.cpython-313.pyc`、`model_explain.cpython-313.pyc`、`permutation_test.cpython-313.pyc`、`run_all.cpython-313.pyc`、`seed_stability.cpython-313.pyc`、`shapley.cpython-313.pyc`、`train.cpython-313.pyc`、`wordpiece.cpython-313.pyc`、`audit_extra.py`、`data.py`、`evidence_time.py`、`invariance_check.py`、`model.py`、`model_explain.py`、`permutation_test.py`、`run_all.py`、`seed_stability.py`、`shapley.py`、`train.py`、`wordpiece.py` | `src/q3_explain/` | `src/q3_explain/`（25 文件） | 442421 | — |
 | 段055「核心代码」 | 词级强制对齐最小依赖（与问题一解耦）：`__init__.py`、`monotonic_align.py` | `src/q1_alignment/` | `src/q1_alignment/`（2 文件） | 8908 | — |
-| 段055「说明文档」 | 解题报告 | `output/evidence/问题三解题报告.md` | `docs/问题三解题报告.md` | 9353 | 9fd804b40e88a2f6… |
-| 段055「说明文档」 | 运行说明 + 数据集处理规则 + 参数配置 | `output/evidence/问题三_运行说明.md` | `docs/问题三_运行说明.md` | 8898 | 7dac2a9ca591e3e7… |
-| 段055「说明文档」 | 方案校验报告 | `output/evidence/问题三方案校验报告.md` | `docs/qa/问题三方案校验报告.md` | 36198 | 4f2636ee5f1217c0… |
-| 段055「说明文档」 | 方法学说明（本仓库自有文档） | `—` | `method.md` | 9305 | 39ab648062ccc772… |
+| 段055「说明文档」 | 解题报告 | `output/evidence/问题三解题报告.md` | `docs/问题三解题报告.md` | 9980 | bfa82d9a7f486c86… |
+| 段055「说明文档」 | 运行说明 + 数据集处理规则 + 参数配置 | `output/evidence/问题三_运行说明.md` | `docs/问题三_运行说明.md` | 10537 | 995147995f167a48… |
+| 段055「说明文档」 | 方案校验报告 | `output/evidence/问题三方案校验报告.md` | `docs/qa/问题三方案校验报告.md` | 37421 | bf95d806221862ba… |
+| 段055「说明文档」 | 方法学说明（本仓库自有文档） | `—` | `method.md` | 9925 | aaf761644d8ccde7… |
 | 段055「模型参数文件」 | 模型权重（state_dict + dims + hidden） | `output/models/q3_model.pt` | `models/q3_model.pt` | 1493704 | f58c85d3e24017e8… |
 | 段055「模型参数文件」 | 训练记录（超参 + 逐轮 history + 验证指标） | `output/models/q3_training.json` | `models/q3_training.json` | 3966 | 544e2dad4c443805… |
-| 段055「配置文件」 | 冻结配置（与服务器逐字节同一份） | `config_q3.yaml` | `config.yaml` | 13210 | 7573c7df3b165509… |
+| 段055「配置文件」 | 冻结配置（与服务器逐字节同一份） | `config_q3.yaml` | `config.yaml` | 14241 | 16427883194ae41c… |
 | 段055「运行环境说明」 | 服务器环境与两套环境警告 | `SERVER_ENV.md` | `SERVER_ENV.md` | 4787 | 369ef8ad52619035… |
 | 段055「运行环境说明」 | 依赖清单（V100/sm_70 锁定说明） | `requirements.txt` | `requirements.txt` | 1189 | 66b21665db2839af… |
 | 段055「运行环境说明」 | 实测版本（Python/torch/numpy/matplotlib/CUDA） | `versions.txt（整题）` | `runtime_versions.json` | 1238 | d530688c0a0e19e9… |
-| 段055「协议」 | 训练-验证-测试协议与评测口径（本仓库自有文档） | `—` | `protocol.json` | 8284 | d3b33d2f9eb3e38a… |
+| 段055「协议」 | 训练-验证-测试协议与评测口径（本仓库自有文档） | `—` | `protocol.json` | 9424 | 11ee3ad50a2e502f… |
 
 ---
 
@@ -66,33 +66,22 @@ python -m q3_explain.run_all --epochs 60
 | 段050「典型样本解释卡」 | 解释卡（含预测、三模态作用程度、主要参考模态、关键证据定位） | `work/q3/解释卡.md` | `results/解释卡.md` | 4559 | e06ca7fa9e22eb2d… |
 | 段052「全量预测与解释汇总」 | 附件4 全量解释（20 条） | `work/q3/explanations.json` | `results/explanations.json` | 27723 | 43edfd2503235d85… |
 | 段053「基础性能/错误归因」 | 验证集指标、忠实度、门控-LOMO、时间溯源 | `work/q3/q3_report.json` | `results/q3_report.json` | 16452 | c663fbb45c0651a7… |
-| 段051「局部片段重要性可视化」 | 5 张图 | `output/figures/q3_{attention_profiles,faithfulness,gate_vs_lomo,modality_weights}.png` | `figures/q3_attention_profiles.png` | 128128 | d43feae744d36676… |
-| 段051「局部片段重要性可视化」 | 5 张图 | `output/figures/q3_{attention_profiles,faithfulness,gate_vs_lomo,modality_weights}.png` | `figures/q3_faithfulness.png` | 48046 | 6d3c4cfaeaee22f0… |
-| 段051「局部片段重要性可视化」 | 5 张图 | `output/figures/q3_{attention_profiles,faithfulness,gate_vs_lomo,modality_weights}.png` | `figures/q3_gate_vs_lomo.png` | 48133 | f0661fc4810e347b… |
-| 段051「局部片段重要性可视化」 | 5 张图 | `output/figures/q3_{attention_profiles,faithfulness,gate_vs_lomo,modality_weights}.png` | `figures/q3_modality_weights.png` | 42400 | 4b1419b7aeef9bde… |
-| 段051「局部片段重要性可视化」 | 5 张图 | `output/figures/q3_{attention_profiles,faithfulness,gate_vs_lomo,modality_weights}.png` | `figures/q3_shapley.png` | 86346 | 2ea8df31b0cd8577… |
+| 段051「局部片段重要性可视化」 | 5 张图 | `output/figures/q3_{attention_profiles,faithfulness,gate_vs_lomo,modality_weights,shapley}.png` | `figures/q3_attention_profiles.png` | 128128 | d43feae744d36676… |
+| 段051「局部片段重要性可视化」 | 5 张图 | `output/figures/q3_{attention_profiles,faithfulness,gate_vs_lomo,modality_weights,shapley}.png` | `figures/q3_faithfulness.png` | 48046 | 6d3c4cfaeaee22f0… |
+| 段051「局部片段重要性可视化」 | 5 张图 | `output/figures/q3_{attention_profiles,faithfulness,gate_vs_lomo,modality_weights,shapley}.png` | `figures/q3_gate_vs_lomo.png` | 48133 | f0661fc4810e347b… |
+| 段051「局部片段重要性可视化」 | 5 张图 | `output/figures/q3_{attention_profiles,faithfulness,gate_vs_lomo,modality_weights,shapley}.png` | `figures/q3_modality_weights.png` | 42400 | 4b1419b7aeef9bde… |
+| 段051「局部片段重要性可视化」 | 5 张图 | `output/figures/q3_{attention_profiles,faithfulness,gate_vs_lomo,modality_weights,shapley}.png` | `figures/q3_shapley.png` | 86346 | 2ea8df31b0cd8577… |
 | 段051「三模态作用差异对比」 | 跨测试集模态重要性对照 | `handoff/模态重要性_跨测试集对照.{md,csv}` | `results/模态重要性_跨测试集对照.csv` | 479 | f5d3abc09a9c9305… |
 | 段051「三模态作用差异对比」 | 跨测试集模态重要性对照 | `handoff/模态重要性_跨测试集对照.{md,csv}` | `results/模态重要性_跨测试集对照.md` | 2880 | 0d6359c557bcd1c2… |
 | 段029「关键证据定位」 | 20 条词级起止秒（缓存/溯源） | `work/q3/att4_time_map.json` | `results/att4_time_map.json` | 79581 | 5ed78a23d45c77ee… |
-| 段029「关键证据定位」 | 特征位置 → 词 → 秒 的平面表（564 行） | `handoff/att4_position_time_map/position_time_map.csv` | `results/position_time_map.csv` | 51970 | 2378d8b89fc9f0d1… |
+| 段029「关键证据定位」 | 逐位置溯源表（位置/子词/词/秒，20 条 × 50 位） | `work/q3/position_time_map.csv` | `results/position_time_map.csv` | 51970 | 2378d8b89fc9f0d1… |
 | 段028「模态作用差异」 | **精确 Shapley 分解**（三模态 8 子集穷举，含 Σφ = f(M) − f(∅) 逐样本校验） | `work/q3/shapley_attribution.json` | `results/shapley_attribution.json` | 16995 | 400e693ed960eb0e… |
-| 段029「关键证据定位」 | 逐位置溯源表（位置/子词/词/秒，20 条 × 50 位） | `work/q3/position_time_map.csv` | `results/position_time_map.csv` | 51970 | 2378d8b89fc9f0d1… |
 | 段029「多模态融合」 | 每样本 8 个子集的可用掩码、三类概率与强度（160 行，空集可复算） | `work/q3/附件4_8子集逐样本.csv` | `results/附件4_8子集逐样本.csv` | 11764 | 1ed6071ffc3dfb3a… |
 | 段052「全量预测与解释汇总」 | 解释卡全字段 CSV（含门控/扰动主导、不一致标记、映射置信） | `work/q3/附件4_预测与解释结果_全字段.csv` | `results/附件4_预测与解释结果_全字段.csv` | 5029 | 9f35b40ea213d06a… |
 | 段023「可复现性」 | 掩码与无效位置不变性的验收记录（A–F 六项） | `work/q3/invariance_check.json` | `results/invariance_check.json` | 2565 | c6bb972d39db2a3c… |
 | 段031「开发评价/留出对照」 | 测试划分指标、回归残差、mean|φ|、门控与 LOMO 描述统计 | `work/q3/q3_audit_extra.json` | `results/q3_audit_extra.json` | 10362 | 4b6ecfd95f31a2af… |
-| 段062「开源工具版本」 | bert-base-uncased 词表（30522 行，Apache-2.0，随包发布以复现精确子词→词映射） | `work/bert-base-uncased_vocab.txt` | `vocab/bert-base-uncased_vocab.txt` | 231508 | 07eced375cec144d… |
-| 段029「关键证据定位」 | 逐位置溯源表（位置/子词/词/秒，20 条 × 50 位） | `work/q3/position_time_map.csv` | `results/position_time_map.csv` | 51970 | 2378d8b89fc9f0d1… |
-| 段029「多模态融合」 | 每样本 8 个子集的可用掩码、三类概率与强度（160 行，空集可复算） | `work/q3/附件4_8子集逐样本.csv` | `results/附件4_8子集逐样本.csv` | 11764 | 1ed6071ffc3dfb3a… |
-| 段052「全量预测与解释汇总」 | 解释卡全字段 CSV（含门控/扰动主导、不一致标记、映射置信） | `work/q3/附件4_预测与解释结果_全字段.csv` | `results/附件4_预测与解释结果_全字段.csv` | 5029 | 9f35b40ea213d06a… |
-| 段023「可复现性」 | 掩码与无效位置不变性的验收记录（A–F 六项） | `work/q3/invariance_check.json` | `results/invariance_check.json` | 2565 | c6bb972d39db2a3c… |
-| 段031「开发评价/留出对照」 | 测试划分指标、回归残差、mean|φ|、门控与 LOMO 描述统计 | `work/q3/q3_audit_extra.json` | `results/q3_audit_extra.json` | 10362 | 4b6ecfd95f31a2af… |
-| 段062「开源工具版本」 | bert-base-uncased 词表（30522 行，Apache-2.0，随包发布以复现精确子词→词映射） | `work/bert-base-uncased_vocab.txt` | `vocab/bert-base-uncased_vocab.txt` | 231508 | 07eced375cec144d… |
-| 段029「关键证据定位」 | 逐位置溯源表（位置/子词/词/秒，20 条 × 50 位） | `work/q3/position_time_map.csv` | `results/position_time_map.csv` | 51970 | 2378d8b89fc9f0d1… |
-| 段029「多模态融合」 | 每样本 8 个子集的可用掩码、三类概率与强度（160 行，空集可复算） | `work/q3/附件4_8子集逐样本.csv` | `results/附件4_8子集逐样本.csv` | 11764 | 1ed6071ffc3dfb3a… |
-| 段052「全量预测与解释汇总」 | 解释卡全字段 CSV（含门控/扰动主导、不一致标记、映射置信） | `work/q3/附件4_预测与解释结果_全字段.csv` | `results/附件4_预测与解释结果_全字段.csv` | 5029 | 9f35b40ea213d06a… |
-| 段023「可复现性」 | 掩码与无效位置不变性的验收记录（A–F 六项） | `work/q3/invariance_check.json` | `results/invariance_check.json` | 2565 | c6bb972d39db2a3c… |
-| 段031「开发评价/留出对照」 | 测试划分指标、回归残差、mean|φ|、门控与 LOMO 描述统计 | `work/q3/q3_audit_extra.json` | `results/q3_audit_extra.json` | 10362 | 4b6ecfd95f31a2af… |
+| 段023「可复现性」 | **5 个随机种子的稳定性**（训练 / 忠实度 / 留一扰动 / 门控，均值±标准差） | `work/q3/seed_stability.json` | `results/seed_stability.json` | 10543 | debc7f9436264978… |
+| 段023「可复现性」 | **置换检验**：注意力随机重排的经验零分布、95% 区间与单侧 p 值 | `work/q3/permutation_test.json` | `results/permutation_test.json` | 4634 | 4c61b45065f970c2… |
 | 段062「开源工具版本」 | bert-base-uncased 词表（30522 行，Apache-2.0，随包发布以复现精确子词→词映射） | `work/bert-base-uncased_vocab.txt` | `vocab/bert-base-uncased_vocab.txt` | 231508 | 07eced375cec144d… |
 
 ---
@@ -130,7 +119,7 @@ python package.py
 
 2. **三问的文本输入接口并不相同**（本问用附件2 官方预计算的 `text`；第二问因附件3 无 `text` 列而改用 `text_bert`）。同一问内的「训练↔推理」接口一致，符合段018；跨问接口差异属已知边界，论文中已交代。
 
-3. **关键证据的秒数来自词级约束式单调强制对齐**（20/20 覆盖率 1.000），不是把时长按 50 等分的均匀切分——均匀切分的偏差均值 1.968 s、最大 3.627 s，已被否决。
+3. **关键证据的秒数来自词级约束式单调强制对齐**（20/20 覆盖率 1.000），不是把时长按 50 等分的均匀切分——均匀切分的偏差均值 1.587 s、最大 3.595 s，已被否决。
 
 4. **附件4 是「同源留出样本」**，不是独立第三方测试集。
 

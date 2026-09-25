@@ -1,0 +1,147 @@
+{
+  "k": 3,
+  "n_random": 5,
+  "n_pool": 200,
+  "n_rounds": 4000,
+  "seed": 0,
+  "observed_source": "work/q3/q3_report.json 的 faithfulness 段（主流程预注册口径，R=5）",
+  "protocol": "注意力在候选位上随机重排 ⇒ 峰值组=均匀随机 k 子集 T、低谷组=从候选位去 T 后均匀随机 k 子集（与重排后的『最低 k 个』同分布）、随机组=均匀随机 k 子集，R 次取平均；资格仍是候选位数 ≥ 2k 的同一子集",
+  "per_modality": {
+    "text": {
+      "n_eligible": 713,
+      "n_excluded": 15,
+      "observed_recomputed": {
+        "mean_top": 0.28879377594920397,
+        "mean_rand": 0.06911209027164031,
+        "mean_low": 0.019573629325645,
+        "gap_top_minus_rand": 0.21968168567756366,
+        "gap_rand_minus_low": 0.04953846094599531,
+        "share_strict_order": 0.7349228611500701
+      },
+      "observed_canonical": {
+        "share_strict_order": 0.7391304347826086,
+        "gap_top_minus_rand": 0.22081461548805237,
+        "gap_rand_minus_low": 0.04840552806854248
+      },
+      "recompute_vs_canonical_max_abs_diff": 0.0042,
+      "null_strict_order": {
+        "mean": 0.2271,
+        "p2.5": 0.1964,
+        "p50": 0.2272,
+        "p97.5": 0.2581,
+        "p_value_one_sided": 0.0002,
+        "p_value_resolution": 0.00025
+      },
+      "null_gap_top_minus_rand": {
+        "mean": -0.001,
+        "p2.5": -0.0107,
+        "p97.5": 0.0093,
+        "p_value_one_sided": 0.0002
+      },
+      "null_gap_rand_minus_low": {
+        "mean": 0.0001,
+        "p2.5": -0.0104,
+        "p97.5": 0.0101,
+        "p_value_one_sided": 0.0002
+      }
+    },
+    "audio": {
+      "n_eligible": 712,
+      "n_excluded": 16,
+      "observed_recomputed": {
+        "mean_top": 0.011144157823468193,
+        "mean_rand": 0.0061469311396894835,
+        "mean_low": 0.008347674534561929,
+        "gap_top_minus_rand": 0.0049972266837787094,
+        "gap_rand_minus_low": -0.0022007433948724453,
+        "share_strict_order": 0.25702247191011235
+      },
+      "observed_canonical": {
+        "share_strict_order": 0.2752808988764045,
+        "gap_top_minus_rand": 0.005064024589955807,
+        "gap_rand_minus_low": -0.0022675395011901855
+      },
+      "recompute_vs_canonical_max_abs_diff": 0.0183,
+      "null_strict_order": {
+        "mean": 0.2238,
+        "p2.5": 0.1938,
+        "p50": 0.2233,
+        "p97.5": 0.2556,
+        "p_value_one_sided": 0.0012,
+        "p_value_resolution": 0.00025
+      },
+      "null_gap_top_minus_rand": {
+        "mean": -0.0,
+        "p2.5": -0.0005,
+        "p97.5": 0.0005,
+        "p_value_one_sided": 0.0002
+      },
+      "null_gap_rand_minus_low": {
+        "mean": -0.0,
+        "p2.5": -0.0005,
+        "p97.5": 0.0004,
+        "p_value_one_sided": 1.0
+      }
+    },
+    "vision": {
+      "n_eligible": 679,
+      "n_excluded": 49,
+      "observed_recomputed": {
+        "mean_top": 0.01089073624873372,
+        "mean_rand": 0.0046040273215265095,
+        "mean_low": 0.009080498154235343,
+        "gap_top_minus_rand": 0.00628670892720721,
+        "gap_rand_minus_low": -0.004476470832708833,
+        "share_strict_order": 0.2503681885125184
+      },
+      "observed_canonical": {
+        "share_strict_order": 0.24005891016200295,
+        "gap_top_minus_rand": 0.006143419537693262,
+        "gap_rand_minus_low": -0.0043331836350262165
+      },
+      "recompute_vs_canonical_max_abs_diff": 0.0103,
+      "null_strict_order": {
+        "mean": 0.2216,
+        "p2.5": 0.1915,
+        "p50": 0.2209,
+        "p97.5": 0.2533,
+        "p_value_one_sided": 0.1362,
+        "p_value_resolution": 0.00025
+      },
+      "null_gap_top_minus_rand": {
+        "mean": 0.0,
+        "p2.5": -0.0006,
+        "p97.5": 0.0008,
+        "p_value_one_sided": 0.0002
+      },
+      "null_gap_rand_minus_low": {
+        "mean": -0.0,
+        "p2.5": -0.0009,
+        "p97.5": 0.0006,
+        "p_value_one_sided": 1.0
+      }
+    }
+  },
+  "self_check_vs_main_pipeline": {
+    "text": {
+      "recomputed_share": 0.7349228611500701,
+      "canonical_share": 0.7391304347826086,
+      "max_abs_diff": 0.0042,
+      "within_random_resampling_noise": true
+    },
+    "audio": {
+      "recomputed_share": 0.25702247191011235,
+      "canonical_share": 0.2752808988764045,
+      "max_abs_diff": 0.0183,
+      "within_random_resampling_noise": true
+    },
+    "vision": {
+      "recomputed_share": 0.2503681885125184,
+      "canonical_share": 0.24005891016200295,
+      "max_abs_diff": 0.0103,
+      "within_random_resampling_noise": true
+    }
+  },
+  "checkpoint": "output/models/q3_model.pt",
+  "split": "attachment2_valid(n=728)"
+}

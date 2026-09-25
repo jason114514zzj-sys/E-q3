@@ -8,9 +8,16 @@
 # ==========================================================
 
 project: q3_explain
-version: "1.1.0"
+version: "1.1.1"
 frozen: true
 frozen_date: "2026-09-25"
+# v1.1.1（2026-09-25）与 v1.1.0 的差异 —— 只增加两项**检验性**实验，模型与主流程产物未变：
+#  1) seed_stability.py：5 个随机种子（20260924/20260925/20260926/1/2）在相同数据划分、
+#     超参与选模准则下重跑训练、忠实度、留一扰动与门控，输出 work/q3/seed_stability.json；
+#  2) permutation_test.py：把候选位上的注意力权重随机重排构造经验零分布（200 组抽样池 ×
+#     4000 轮，R=5 次随机取平均），输出 work/q3/permutation_test.json。
+# 影响：论文第 7 章新增「随机种子稳定性」段与「置换检验」段；模态排序表述收窄为
+#      「文本明显高于另两路，视听两路不排序」；模型权重、主流程结果、图、词表逐字节未变。
 # v1.1.0（2026-09-25）与 v1.0.0 的差异 —— 两处结构/契约变更，均已重训重算：
 #  1) 编码器自注意力补 src_key_padding_mask（并定义整路不可观测时的安全分支）；
 #  2) 子词→词映射由"按比例近似"改为"用 bert-base-uncased 词表重建 token 序列
@@ -210,5 +217,7 @@ outputs:
   all_fields: work/q3/附件4_预测与解释结果_全字段.csv  # 解释卡全字段（含不一致标记）
   audit: work/q3/q3_audit_extra.json                 # 测试划分指标/回归残差/mean|φ|/描述统计
   invariance: work/q3/invariance_check.json          # 掩码验收（A–F 六项）
+  seed_stability: work/q3/seed_stability.json        # 5 个随机种子的指标/忠实度/留一/门控波动
+  permutation: work/q3/permutation_test.json         # 置换检验：经验零分布、95% 区间、单侧 p 值
   figures: output/figures/q3_*.png                   # 5 张
 

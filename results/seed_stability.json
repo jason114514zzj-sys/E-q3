@@ -1,0 +1,554 @@
+{
+  "seeds": [
+    20260924,
+    20260925,
+    20260926,
+    1,
+    2
+  ],
+  "epochs": 60,
+  "device": "cuda",
+  "per_seed": {
+    "20260924": {
+      "best_epoch": 4,
+      "epochs_run": 16,
+      "valid": {
+        "accuracy": 0.6442,
+        "macro_f1": 0.6118,
+        "mae": 0.6074,
+        "pearson": 0.675,
+        "n": 728
+      },
+      "test": {
+        "accuracy": 0.6685,
+        "macro_f1": 0.6079,
+        "mae": 0.6399,
+        "pearson": 0.7004,
+        "n": 727
+      },
+      "faithfulness_strict_share": {
+        "text": 0.7391,
+        "audio": 0.2753,
+        "vision": 0.2401
+      },
+      "faithfulness_gap_top_rand": {
+        "text": 0.2208,
+        "audio": 0.0051,
+        "vision": 0.0061
+      },
+      "faithfulness_gap_rand_low": {
+        "text": 0.0484,
+        "audio": -0.0023,
+        "vision": -0.0043
+      },
+      "faithfulness_n_low": {
+        "text": 713,
+        "audio": 712,
+        "vision": 679
+      },
+      "lomo_mean": {
+        "text": 0.7588,
+        "audio": 0.0696,
+        "vision": 0.0908
+      },
+      "gate_mean": {
+        "text": 0.7024,
+        "audio": 0.1279,
+        "vision": 0.1697
+      }
+    },
+    "20260925": {
+      "best_epoch": 9,
+      "epochs_run": 21,
+      "valid": {
+        "accuracy": 0.6154,
+        "macro_f1": 0.6084,
+        "mae": 0.6298,
+        "pearson": 0.6338,
+        "n": 728
+      },
+      "test": {
+        "accuracy": 0.6451,
+        "macro_f1": 0.623,
+        "mae": 0.6595,
+        "pearson": 0.6838,
+        "n": 727
+      },
+      "faithfulness_strict_share": {
+        "text": 0.8527,
+        "audio": 0.4171,
+        "vision": 0.3814
+      },
+      "faithfulness_gap_top_rand": {
+        "text": 0.2441,
+        "audio": 0.0239,
+        "vision": 0.0249
+      },
+      "faithfulness_gap_rand_low": {
+        "text": 0.0518,
+        "audio": 0.0004,
+        "vision": -0.0047
+      },
+      "faithfulness_n_low": {
+        "text": 713,
+        "audio": 712,
+        "vision": 679
+      },
+      "lomo_mean": {
+        "text": 0.6587,
+        "audio": 0.1576,
+        "vision": 0.1513
+      },
+      "gate_mean": {
+        "text": 0.5281,
+        "audio": 0.2307,
+        "vision": 0.2411
+      }
+    },
+    "20260926": {
+      "best_epoch": 3,
+      "epochs_run": 15,
+      "valid": {
+        "accuracy": 0.6346,
+        "macro_f1": 0.6096,
+        "mae": 0.7074,
+        "pearson": 0.6584,
+        "n": 728
+      },
+      "test": {
+        "accuracy": 0.6699,
+        "macro_f1": 0.6191,
+        "mae": 0.7455,
+        "pearson": 0.6965,
+        "n": 727
+      },
+      "faithfulness_strict_share": {
+        "text": 0.6578,
+        "audio": 0.3104,
+        "vision": 0.3402
+      },
+      "faithfulness_gap_top_rand": {
+        "text": 0.1747,
+        "audio": 0.0066,
+        "vision": 0.0268
+      },
+      "faithfulness_gap_rand_low": {
+        "text": 0.0369,
+        "audio": -0.0015,
+        "vision": -0.004
+      },
+      "faithfulness_n_low": {
+        "text": 713,
+        "audio": 712,
+        "vision": 679
+      },
+      "lomo_mean": {
+        "text": 0.9154,
+        "audio": 0.0938,
+        "vision": 0.1684
+      },
+      "gate_mean": {
+        "text": 0.657,
+        "audio": 0.1244,
+        "vision": 0.2185
+      }
+    },
+    "1": {
+      "best_epoch": 3,
+      "epochs_run": 15,
+      "valid": {
+        "accuracy": 0.6538,
+        "macro_f1": 0.6269,
+        "mae": 0.6304,
+        "pearson": 0.6595,
+        "n": 728
+      },
+      "test": {
+        "accuracy": 0.6726,
+        "macro_f1": 0.6147,
+        "mae": 0.6545,
+        "pearson": 0.6926,
+        "n": 727
+      },
+      "faithfulness_strict_share": {
+        "text": 0.6241,
+        "audio": 0.3455,
+        "vision": 0.2607
+      },
+      "faithfulness_gap_top_rand": {
+        "text": 0.1207,
+        "audio": 0.0082,
+        "vision": 0.0154
+      },
+      "faithfulness_gap_rand_low": {
+        "text": 0.0234,
+        "audio": -0.0014,
+        "vision": -0.0032
+      },
+      "faithfulness_n_low": {
+        "text": 713,
+        "audio": 712,
+        "vision": 679
+      },
+      "lomo_mean": {
+        "text": 0.7119,
+        "audio": 0.0694,
+        "vision": 0.1351
+      },
+      "gate_mean": {
+        "text": 0.6051,
+        "audio": 0.1602,
+        "vision": 0.2348
+      }
+    },
+    "2": {
+      "best_epoch": 4,
+      "epochs_run": 16,
+      "valid": {
+        "accuracy": 0.6126,
+        "macro_f1": 0.6018,
+        "mae": 0.5908,
+        "pearson": 0.6627,
+        "n": 728
+      },
+      "test": {
+        "accuracy": 0.6479,
+        "macro_f1": 0.6219,
+        "mae": 0.6403,
+        "pearson": 0.6849,
+        "n": 727
+      },
+      "faithfulness_strict_share": {
+        "text": 0.6971,
+        "audio": 0.4073,
+        "vision": 0.1959
+      },
+      "faithfulness_gap_top_rand": {
+        "text": 0.1534,
+        "audio": 0.0152,
+        "vision": 0.007
+      },
+      "faithfulness_gap_rand_low": {
+        "text": 0.0362,
+        "audio": -0.0001,
+        "vision": -0.0102
+      },
+      "faithfulness_n_low": {
+        "text": 713,
+        "audio": 712,
+        "vision": 679
+      },
+      "lomo_mean": {
+        "text": 0.5642,
+        "audio": 0.1049,
+        "vision": 0.1319
+      },
+      "gate_mean": {
+        "text": 0.5794,
+        "audio": 0.2056,
+        "vision": 0.2149
+      }
+    }
+  },
+  "aggregate": {
+    "best_epoch": {
+      "mean": 4.6,
+      "std": 2.51,
+      "min": 3.0,
+      "max": 9.0,
+      "values": [
+        4.0,
+        9.0,
+        3.0,
+        3.0,
+        4.0
+      ]
+    },
+    "epochs_run": {
+      "mean": 16.6,
+      "std": 2.51,
+      "min": 15.0,
+      "max": 21.0,
+      "values": [
+        16.0,
+        21.0,
+        15.0,
+        15.0,
+        16.0
+      ]
+    },
+    "valid.accuracy": {
+      "mean": 0.6321,
+      "std": 0.0179,
+      "min": 0.6126,
+      "max": 0.6538,
+      "values": [
+        0.6442,
+        0.6154,
+        0.6346,
+        0.6538,
+        0.6126
+      ]
+    },
+    "valid.macro_f1": {
+      "mean": 0.6117,
+      "std": 0.0093,
+      "min": 0.6018,
+      "max": 0.6269,
+      "values": [
+        0.6118,
+        0.6084,
+        0.6096,
+        0.6269,
+        0.6018
+      ]
+    },
+    "valid.mae": {
+      "mean": 0.6332,
+      "std": 0.0447,
+      "min": 0.5908,
+      "max": 0.7074,
+      "values": [
+        0.6074,
+        0.6298,
+        0.7074,
+        0.6304,
+        0.5908
+      ]
+    },
+    "valid.pearson": {
+      "mean": 0.6579,
+      "std": 0.015,
+      "min": 0.6338,
+      "max": 0.675,
+      "values": [
+        0.675,
+        0.6338,
+        0.6584,
+        0.6595,
+        0.6627
+      ]
+    },
+    "test.accuracy": {
+      "mean": 0.6608,
+      "std": 0.0132,
+      "min": 0.6451,
+      "max": 0.6726,
+      "values": [
+        0.6685,
+        0.6451,
+        0.6699,
+        0.6726,
+        0.6479
+      ]
+    },
+    "test.macro_f1": {
+      "mean": 0.6173,
+      "std": 0.0062,
+      "min": 0.6079,
+      "max": 0.623,
+      "values": [
+        0.6079,
+        0.623,
+        0.6191,
+        0.6147,
+        0.6219
+      ]
+    },
+    "test.mae": {
+      "mean": 0.6679,
+      "std": 0.0442,
+      "min": 0.6399,
+      "max": 0.7455,
+      "values": [
+        0.6399,
+        0.6595,
+        0.7455,
+        0.6545,
+        0.6403
+      ]
+    },
+    "test.pearson": {
+      "mean": 0.6916,
+      "std": 0.0072,
+      "min": 0.6838,
+      "max": 0.7004,
+      "values": [
+        0.7004,
+        0.6838,
+        0.6965,
+        0.6926,
+        0.6849
+      ]
+    },
+    "faithfulness_strict_share.text": {
+      "mean": 0.7142,
+      "std": 0.0886,
+      "min": 0.6241,
+      "max": 0.8527,
+      "values": [
+        0.7391,
+        0.8527,
+        0.6578,
+        0.6241,
+        0.6971
+      ]
+    },
+    "faithfulness_strict_share.vision": {
+      "mean": 0.2837,
+      "std": 0.0756,
+      "min": 0.1959,
+      "max": 0.3814,
+      "values": [
+        0.2401,
+        0.3814,
+        0.3402,
+        0.2607,
+        0.1959
+      ]
+    },
+    "faithfulness_strict_share.audio": {
+      "mean": 0.3511,
+      "std": 0.0611,
+      "min": 0.2753,
+      "max": 0.4171,
+      "values": [
+        0.2753,
+        0.4171,
+        0.3104,
+        0.3455,
+        0.4073
+      ]
+    },
+    "faithfulness_gap_top_rand.text": {
+      "mean": 0.1827,
+      "std": 0.05,
+      "min": 0.1207,
+      "max": 0.2441,
+      "values": [
+        0.2208,
+        0.2441,
+        0.1747,
+        0.1207,
+        0.1534
+      ]
+    },
+    "faithfulness_gap_rand_low.text": {
+      "mean": 0.0393,
+      "std": 0.0113,
+      "min": 0.0234,
+      "max": 0.0518,
+      "values": [
+        0.0484,
+        0.0518,
+        0.0369,
+        0.0234,
+        0.0362
+      ]
+    },
+    "lomo_mean.text": {
+      "mean": 0.7218,
+      "std": 0.1302,
+      "min": 0.5642,
+      "max": 0.9154,
+      "values": [
+        0.7588,
+        0.6587,
+        0.9154,
+        0.7119,
+        0.5642
+      ]
+    },
+    "lomo_mean.vision": {
+      "mean": 0.1355,
+      "std": 0.0289,
+      "min": 0.0908,
+      "max": 0.1684,
+      "values": [
+        0.0908,
+        0.1513,
+        0.1684,
+        0.1351,
+        0.1319
+      ]
+    },
+    "lomo_mean.audio": {
+      "mean": 0.0991,
+      "std": 0.0362,
+      "min": 0.0694,
+      "max": 0.1576,
+      "values": [
+        0.0696,
+        0.1576,
+        0.0938,
+        0.0694,
+        0.1049
+      ]
+    },
+    "gate_mean.text": {
+      "mean": 0.6144,
+      "std": 0.0677,
+      "min": 0.5281,
+      "max": 0.7024,
+      "values": [
+        0.7024,
+        0.5281,
+        0.657,
+        0.6051,
+        0.5794
+      ]
+    },
+    "gate_mean.vision": {
+      "mean": 0.2158,
+      "std": 0.028,
+      "min": 0.1697,
+      "max": 0.2411,
+      "values": [
+        0.1697,
+        0.2411,
+        0.2185,
+        0.2348,
+        0.2149
+      ]
+    },
+    "gate_mean.audio": {
+      "mean": 0.1698,
+      "std": 0.0472,
+      "min": 0.1244,
+      "max": 0.2307,
+      "values": [
+        0.1279,
+        0.2307,
+        0.1244,
+        0.1602,
+        0.2056
+      ]
+    }
+  },
+  "self_check_vs_main_pipeline": {
+    "primary_seed": 20260924,
+    "compare": {
+      "valid_accuracy": {
+        "seed_run": 0.6442,
+        "q3_report": 0.6442
+      },
+      "valid_macro_f1": {
+        "seed_run": 0.6118,
+        "q3_report": 0.6118
+      },
+      "valid_mae": {
+        "seed_run": 0.6074,
+        "q3_report": 0.6074
+      },
+      "valid_pearson": {
+        "seed_run": 0.675,
+        "q3_report": 0.675
+      },
+      "best_epoch": {
+        "seed_run": 4,
+        "q3_report": 4
+      }
+    },
+    "all_equal": true
+  }
+}

@@ -1,19 +1,19 @@
 {
   "README.md": {
-    "bytes": 12250,
-    "sha256": "ce69a4d771e5300714272a22833a0251d10de74a451dfe79ccb50a84bf67692a"
+    "bytes": 12626,
+    "sha256": "e2e57ab255434beee0b04c633a2bd05d10fac85b664048eaa5c5986bae0897c5"
   },
   "method.md": {
-    "bytes": 9305,
-    "sha256": "39ab648062ccc77213fdc8c367661cd5a95d07cac5ec6ef9fc17a543692e7e6c"
+    "bytes": 9925,
+    "sha256": "aaf761644d8ccde78288ef469a2204037547084bc3b221536708d37bead8ced1"
   },
   "config.yaml": {
-    "bytes": 13210,
-    "sha256": "7573c7df3b165509b277205f2baf40673dfe8f85ec8fd94dfa185462fb195495"
+    "bytes": 14241,
+    "sha256": "16427883194ae41c0abffef7fbbaea7a94ff84bd6a527ff1ad01d8efe5d289ad"
   },
   "protocol.json": {
-    "bytes": 8284,
-    "sha256": "d3b33d2f9eb3e38acb0fda765588c2ec863e39acbb1c5c1f04a9334c3beeae56"
+    "bytes": 9424,
+    "sha256": "11ee3ad50a2e502fcd69ed2f7233df22cc745ef82f23f0a42e0a7738efda6c33"
   },
   "requirements.txt": {
     "bytes": 1189,
@@ -28,8 +28,8 @@
     "sha256": "4b7091c7542fe53afdd76de3711eb42c7505f0803401e1b5d6327a71ff2a4869"
   },
   "DELIVERABLES.md": {
-    "bytes": 15949,
-    "sha256": "67f82c5cb0e5ae0f86487c586b3433a0c2c6166f7fb600c4cc9631d4238536cb"
+    "bytes": 13610,
+    "sha256": "5ca06b824b17e4625454118342946732ce2b9aeadb60c19f78f692545bc71e00"
   },
   "SERVER_ENV.md": {
     "bytes": 4787,
@@ -75,9 +75,17 @@
     "bytes": 26012,
     "sha256": "dff8aea314b6e52ff866b45798bf8a4dff51970a7aa30eb48fbd5719599b414b"
   },
+  "src/q3_explain/permutation_test.py": {
+    "bytes": 14977,
+    "sha256": "aedd213c6f1c0b2b0095a2de76e5995f7d142954e648b2cd017003a00adb30e2"
+  },
   "src/q3_explain/run_all.py": {
     "bytes": 28983,
     "sha256": "54d66bf8c023008149c32b2fd1563f61c6f8ee0265ff1757925ec97eee588745"
+  },
+  "src/q3_explain/seed_stability.py": {
+    "bytes": 7786,
+    "sha256": "b52ef93bbc5750a99037c8ab83f2d3467da3f5c15ef876c8f20f6d4227ab1a02"
   },
   "src/q3_explain/shapley.py": {
     "bytes": 16738,
@@ -111,6 +119,10 @@
     "bytes": 2565,
     "sha256": "c6bb972d39db2a3c2481fbf396350eaa6caaf1265b15f129cb09a2f25083641d"
   },
+  "results/permutation_test.json": {
+    "bytes": 4634,
+    "sha256": "4c61b45065f970c2f37bc77bd8fd09bfe8524666af626824bc828e9fdffef927"
+  },
   "results/position_time_map.csv": {
     "bytes": 51970,
     "sha256": "2378d8b89fc9f0d19e9440a7f1326cb9263802cb7219c2750ef2d60ebf199d7e"
@@ -122,6 +134,10 @@
   "results/q3_report.json": {
     "bytes": 16452,
     "sha256": "c663fbb45c0651a78d4dff2fdc7726291e73dc3d3d7a16292f5ae481ca1d88c2"
+  },
+  "results/seed_stability.json": {
+    "bytes": 10543,
+    "sha256": "debc7f94362649785035f72d03553091ef9aa8df5568c22c54a71e6eaed7b42f"
   },
   "results/shapley_attribution.json": {
     "bytes": 16995,
@@ -172,20 +188,20 @@
     "sha256": "2ea8df31b0cd8577fe73290c5415b40cbf2f5615c4bcaacbfa74d10886c45d82"
   },
   "docs/qa/问题三方案校验报告.md": {
-    "bytes": 36198,
-    "sha256": "4f2636ee5f1217c0e0c23a6056162562d257c904d843a32b3c3e6ba4feb57473"
+    "bytes": 37421,
+    "sha256": "bf95d806221862ba2c3c5fa9aeb9bfd4ec73129c4aea9f464dd798c0fb0d3cfc"
   },
   "docs/位置到秒映射_说明.md": {
     "bytes": 6603,
     "sha256": "b3e2161cc974aa3f0aeddea685766f439b07820ee0b673f60d6d983f673da067"
   },
   "docs/问题三_运行说明.md": {
-    "bytes": 8898,
-    "sha256": "7dac2a9ca591e3e74db4343dab84e19a3a0c30a8881c57e4548eaac31f91f450"
+    "bytes": 10537,
+    "sha256": "995147995f167a48a962a3d47d35f6121986f41e62c3f328395d5abfc1e34ad3"
   },
   "docs/问题三解题报告.md": {
-    "bytes": 9353,
-    "sha256": "9fd804b40e88a2f6908dbb0a777404cd2c88c66bd307a6f2e0cb48b28a325d4d"
+    "bytes": 9980,
+    "sha256": "bfa82d9a7f486c861eeeffba3d9a6daa2d1029b0e9525a75f4619b34385a2011"
   },
   "vocab/bert-base-uncased_vocab.txt": {
     "bytes": 231508,
