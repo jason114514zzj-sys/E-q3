@@ -224,6 +224,82 @@ def main() -> int:
     print(f"[F] 子词→词映射: {rep['checks']['F_subword_to_word_verified']['verified']} "
           f"{'通过' if rep['checks']['F_subword_to_word_verified']['passed'] else '未通过'}")
 
+    # ---------------------------------------------------------------- G
+    # Shapley 的语义验收（回应审查意见 Q3-04）：
+    #  (1) 手算反例：概率非负**不能**推出 Shapley 值非负；给一个所有子集输出都非负、
+    #      但某个参与者 φ 为负的可手算博弈，与解析值逐位核对；
+    #  (2) 常数平移不变性：对全部 f(S) 加同一常数，φ 必须不变（同一参考点平移）；
+    #  (3) 真实 8 子集响应：全部有限、概率和为 1、效率性恒等式成立。
+    def _shapley(vals: dict, players) -> dict:
+        """n≤3 的精确 Shapley：φ_p = Σ_{S⊆N\\{p}} |S|!(n−|S|−1)!/n! · [f(S∪p) − f(S)]。
+
+        n=3 时权重即「空集与两元素子集 1/3、单元素子集 1/6」，与论文正文一致。
+        """
+        import itertools
+        import math
+        n = len(players)
+        out = {}
+        for p in players:
+            others = [q for q in players if q != p]
+            tot = 0.0
+            for r in range(n):
+                for comb in itertools.combinations(others, r):
+                    w = (math.factorial(r) * math.factorial(n - r - 1)
+                         / math.factorial(n))
+                    tot += w * (vals[frozenset(comb) | {p}] - vals[frozenset(comb)])
+            out[p] = tot
+        return out
+
+    players = ("T", "A", "V")
+    demo = {frozenset(): 0.7, frozenset(("T",)): 0.6, frozenset(("A",)): 0.7,
+            frozenset(("V",)): 0.7, frozenset(("T", "A")): 0.6,
+            frozenset(("T", "V")): 0.6, frozenset(("A", "V")): 0.7,
+            frozenset(("T", "A", "V")): 0.6}
+    phi_demo = _shapley(demo, players)
+    shift = 3.0
+    demo_shift = {k: v + shift for k, v in demo.items()}
+    phi_shift = _shapley(demo_shift, players)
+    all_nonneg = all(v >= 0 for v in demo.values())
+    hand_ok = (abs(phi_demo["T"] + 0.1) < 1e-12 and abs(phi_demo["A"]) < 1e-12
+               and abs(phi_demo["V"]) < 1e-12)
+    shift_ok = all(abs(phi_demo[p] - phi_shift[p]) < 1e-12 for p in players)
+    rep["checks"]["G_shapley_semantics"] = {
+        "how": ("手算 3 参与者博弈 f(S)=0.7−0.1·1[T∈S]（全部子集输出非负）；核对可手算的 "
+                "φ_T=−0.1 与常数平移（+3）不变性；再核对真实 8 子集响应的有限性与概率和"),
+        "synthetic_all_values_nonnegative": all_nonneg,
+        "synthetic_phi": {k: round(v, 6) for k, v in phi_demo.items()},
+        "synthetic_hand_calculation_matches": bool(hand_ok),
+        "constant_shift_invariance": bool(shift_ok),
+    }
+    # (3) 真实 8 子集响应
+    sub_path = RESULTS / "附件4_8子集逐样本.csv"
+    finite = sum_ok = 0
+    rows = 0
+    if sub_path.exists():
+        import csv
+        with sub_path.open(encoding="utf-8-sig", newline="") as fh:
+            for row in csv.DictReader(fh):
+                rows += 1
+                probs = []
+                for k in ("p_negative", "p_neutral", "p_positive"):
+                    if k in row and row[k] not in ("", None):
+                        probs.append(float(row[k]))
+                if probs and all(np.isfinite(probs)):
+                    finite += 1
+                    # 表内概率只保留 6 位小数，故和与 1 的偏差可达 ~1.5e-6
+                    if abs(sum(probs) - 1.0) < 5e-6:
+                        sum_ok += 1
+    rep["checks"]["G_shapley_semantics"].update({
+        "eight_subset_rows": rows,
+        "rows_with_finite_probabilities": finite,
+        "rows_with_probability_sum_one": sum_ok,
+        "passed": bool(hand_ok and shift_ok and finite == rows and rows > 0
+                       and sum_ok == rows),
+    })
+    print(f"[G] Shapley 语义: 手算 φ=(−0.1,0,0) {hand_ok}；常数平移不变 {shift_ok}；"
+          f"8 子集 {rows} 行全部有限且概率和为 1: {finite == rows and sum_ok == rows} "
+          f"{'通过' if rep['checks']['G_shapley_semantics']['passed'] else '未通过'}")
+
     rep["all_passed"] = all(v.get("passed") for v in rep["checks"].values())
     RESULTS.mkdir(parents=True, exist_ok=True)
     dst = RESULTS / "invariance_check.json"

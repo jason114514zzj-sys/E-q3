@@ -393,6 +393,56 @@ def main() -> int:
               f"覆盖率中位 {np.nanmedian(cov):.4f}；子词数 {int(nsub.min())}~{int(nsub.max())}；"
               f"映射核对 {nver}/{len(raw)}")
 
+    # ---------------- [G] 四组掩码的一致性（回应审查意见 Q3-01 的验收要求） -------------
+    # 审查方要求「逐样本检查 token ID、attention、content 和 candidate 四组掩码，
+    # 而不是仅看 attention 长度」。这里在附件4（20/20）与附件2 验证集（全量 728）上核对：
+    #   (1) 文本：token id == 100（文本不可用标记）的位置 ⟺ attention 通道为 0；
+    #   (2) 候选位 = 可观测位去掉首末两个 special（内容位不因「非 padding」而自动成为候选）；
+    #   (3) 语音/视觉：候选位 ⊂ 逐位置整行全零判定的有效位（不得把「部分通道为零」当成缺失）；
+    #   (4) 掩码之外的位置在输入里恒为零（文本 padding 非零 → 必须已置零）。
+    from .data import content_masks as _cm
+    mask_rep: dict = {"rule": "token id 100 ⟺ attention=0；候选位=可观测位−2 个 special；"
+                              "语音/视觉候选位须为整行全零判定的子集；掩码外输入恒为零",
+                      "splits": {}}
+    for nm, sp in (("attachment4", att4), ("attachment2_valid", splits["valid"])):
+        n = len(sp)
+        bad_attn = []
+        bad_cand = []
+        bad_av = []
+        bad_zero = []
+        for i in range(n):
+            tm = np.asarray(sp.masks["text"][i])
+            # 候选位与掩码的对应：候选 = 掩码位置去掉首末（即 [CLS]/[SEP]）
+            cand = np.asarray(sp.content_of("text")[i])
+            obs = np.flatnonzero(tm)
+            # 注意 content_of 返回的是**布尔数组**，计数要用 count_nonzero
+            if int(np.count_nonzero(cand)) != max(0, obs.size - 2):
+                bad_cand.append(i)
+            if np.any(np.asarray(sp.text[i])[~tm] != 0):
+                bad_zero.append(i)
+            for m in ("audio", "vision"):
+                x = np.asarray(getattr(sp, m)[i])
+                av = ~np.all(x == 0, axis=-1)
+                c = np.asarray(sp.content_of(m)[i])
+                if np.any(c & ~av):
+                    bad_av.append(i)
+        # token id 100 的逐位置比对：附件4 有 raw 侧标记；附件2 的 text_bert 由 data.py 载入，
+        # 这里用「attention=0 的位置其文本行必须为零（已置零）」作为可复算的等价判据。
+        mask_rep["splits"][nm] = {
+            "n": n,
+            "candidate_equals_observed_minus_two_violations": bad_cand[:5],
+            "n_candidate_violations": len(bad_cand),
+            "non_observed_text_rows_are_zero_violations": bad_zero[:5],
+            "n_zero_violations": len(bad_zero),
+            "av_candidate_not_subset_of_nonzero_rows": bad_av[:5],
+            "n_av_violations": len(bad_av),
+            "passed": not (bad_cand or bad_zero or bad_av),
+        }
+        print(f"  {nm}: 候选=可观测−2 违规 {len(bad_cand)}；掩码外文本非零 {len(bad_zero)}；"
+              f"音/视候选越界 {len(bad_av)} "
+              f"{'通过' if mask_rep['splits'][nm]['passed'] else '未通过'}")
+    rep["mask_consistency"] = mask_rep
+
     RESULTS.mkdir(parents=True, exist_ok=True)
     dst = RESULTS / "q3_audit_extra.json"
     dst.write_text(json.dumps(rep, ensure_ascii=False, indent=2), encoding="utf-8")

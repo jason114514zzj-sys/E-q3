@@ -1,0 +1,269 @@
+{
+  "k": 3,
+  "n_random": 5,
+  "n_boot": 1000,
+  "seed": 0,
+  "checkpoint": "output/models/q3_model.pt",
+  "attachment2_valid": {
+    "tag": "att2-valid",
+    "n_samples": 728,
+    "k": 3,
+    "n_random_trials": 5,
+    "n_bootstrap": 1000,
+    "bootstrap_unit": "样本（本问接口不携带 video_id；未按原视频分组）",
+    "window_rule": "交付窗口 = 注意力峰值位在候选序上左右各一位（共 k 个连续候选位，端点截断），与论文式（7-9）一致；低谷窗口 = 注意力最低位为中心的同构窗口；随机窗口 = 候选序上随机起点的连续 k 位，取 R 次平均",
+    "eligibility": "候选位数 ≥ 2k 且 win_top ∩ win_low = ∅",
+    "per_modality": {
+      "text": {
+        "n_candidates_mean": 23.587912087912088,
+        "n_eligible": 586,
+        "n_excluded_too_few_candidates": 15,
+        "n_excluded_window_overlap": 127,
+        "mean_drop_window_top": 0.23464377437409892,
+        "mean_drop_window_random": 0.06816109207938759,
+        "mean_drop_window_low": 0.0322306410762332,
+        "mean_drop_sorted_topk": 0.27725242609762085,
+        "gap_window_top_minus_random": 0.16648268229471133,
+        "gap_window_top_minus_random_ci95": [
+          0.14677927770073376,
+          0.1883372420084316
+        ],
+        "gap_window_random_minus_low": 0.035930451003154396,
+        "gap_window_random_minus_low_ci95": [
+          0.029704403302222234,
+          0.04234372573249906
+        ],
+        "share_strict_order_window": 0.6791808873720137,
+        "share_strict_order_window_ci95": [
+          0.6398890784982935,
+          0.7167235494880546
+        ],
+        "share_topk_gt_random": 0.8532423208191127,
+        "share_window_gt_sorted_topk": 0.36177474402730375,
+        "sorted_topk_equals_window_share": 0.05631399317406143,
+        "mean_drop_sorted_topk_minus_window": 0.04260865172352197
+      },
+      "audio": {
+        "n_candidates_mean": 23.524725274725274,
+        "n_eligible": 639,
+        "n_excluded_too_few_candidates": 16,
+        "n_excluded_window_overlap": 73,
+        "mean_drop_window_top": 0.01030992800501031,
+        "mean_drop_window_random": 0.007615271042770064,
+        "mean_drop_window_low": 0.007893644075065338,
+        "mean_drop_sorted_topk": 0.010640523220078673,
+        "gap_window_top_minus_random": 0.002694656962240246,
+        "gap_window_top_minus_random_ci95": [
+          0.0019606519070146417,
+          0.003482785908817219
+        ],
+        "gap_window_random_minus_low": -0.0002783730322952748,
+        "gap_window_random_minus_low_ci95": [
+          -0.0008397984311147848,
+          0.00023011205210722103
+        ],
+        "share_strict_order_window": 0.30985915492957744,
+        "share_strict_order_window_ci95": [
+          0.27539123630672924,
+          0.34745696400625975
+        ],
+        "share_topk_gt_random": 0.5665101721439749,
+        "share_window_gt_sorted_topk": 0.40375586854460094,
+        "sorted_topk_equals_window_share": 0.13302034428794993,
+        "mean_drop_sorted_topk_minus_window": 0.00033059521506836344
+      },
+      "vision": {
+        "n_candidates_mean": 22.24175824175824,
+        "n_eligible": 622,
+        "n_excluded_too_few_candidates": 49,
+        "n_excluded_window_overlap": 57,
+        "mean_drop_window_top": 0.009598489766910528,
+        "mean_drop_window_random": 0.006995331128262629,
+        "mean_drop_window_low": 0.008211022171033156,
+        "mean_drop_sorted_topk": 0.010409844679895705,
+        "gap_window_top_minus_random": 0.002603158638647898,
+        "gap_window_top_minus_random_ci95": [
+          0.0014783234840971672,
+          0.003726135576143861
+        ],
+        "gap_window_random_minus_low": -0.0012156910427705266,
+        "gap_window_random_minus_low_ci95": [
+          -0.0024039670550698635,
+          -0.00029368510143382197
+        ],
+        "share_strict_order_window": 0.2861736334405145,
+        "share_strict_order_window_ci95": [
+          0.25241157556270094,
+          0.3231913183279742
+        ],
+        "share_topk_gt_random": 0.590032154340836,
+        "share_window_gt_sorted_topk": 0.3295819935691318,
+        "sorted_topk_equals_window_share": 0.22347266881028938,
+        "mean_drop_sorted_topk_minus_window": 0.0008113549129851761
+      }
+    },
+    "dominant_modality_counts": {
+      "text": 724,
+      "audio": 0,
+      "vision": 4
+    },
+    "delivered_window": {
+      "n_evaluated": 585,
+      "dominant_modality_counts_on_subset": {
+        "text": 582,
+        "audio": 0,
+        "vision": 3
+      },
+      "mean_drop_delivered_window": 0.2348726981661768,
+      "mean_drop_random_window": 0.06825715009600687,
+      "mean_drop_low_window": 0.032311850665216774,
+      "gap_delivered_minus_random": 0.16661554807016993,
+      "gap_delivered_minus_random_ci95": [
+        0.14514175253351913,
+        0.1892937592057209
+      ],
+      "gap_random_minus_low": 0.03594529943079011,
+      "gap_random_minus_low_ci95": [
+        0.030207464960077382,
+        0.042292615213136896
+      ],
+      "share_delivered_gt_random_and_gt_low": 0.8188034188034188,
+      "share_strict_order": 0.6752136752136753,
+      "share_strict_order_ci95": [
+        0.6358974358974359,
+        0.7128205128205128
+      ]
+    }
+  },
+  "attachment4": {
+    "tag": "att4",
+    "n_samples": 20,
+    "k": 3,
+    "n_random_trials": 5,
+    "n_bootstrap": 1000,
+    "bootstrap_unit": "样本（本问接口不携带 video_id；未按原视频分组）",
+    "window_rule": "交付窗口 = 注意力峰值位在候选序上左右各一位（共 k 个连续候选位，端点截断），与论文式（7-9）一致；低谷窗口 = 注意力最低位为中心的同构窗口；随机窗口 = 候选序上随机起点的连续 k 位，取 R 次平均",
+    "eligibility": "候选位数 ≥ 2k 且 win_top ∩ win_low = ∅",
+    "per_modality": {
+      "text": {
+        "n_candidates_mean": 28.2,
+        "n_eligible": 16,
+        "n_excluded_too_few_candidates": 0,
+        "n_excluded_window_overlap": 4,
+        "mean_drop_window_top": 0.2503490559756756,
+        "mean_drop_window_random": 0.04355382993817329,
+        "mean_drop_window_low": 0.020132293924689293,
+        "mean_drop_sorted_topk": 0.33340383879840374,
+        "gap_window_top_minus_random": 0.20679522603750228,
+        "gap_window_top_minus_random_ci95": [
+          0.06502524146810175,
+          0.42938064917922014
+        ],
+        "gap_window_random_minus_low": 0.023421536013484,
+        "gap_window_random_minus_low_ci95": [
+          0.011688523134216665,
+          0.03450037670321762
+        ],
+        "share_strict_order_window": 0.8125,
+        "share_strict_order_window_ci95": [
+          0.625,
+          1.0
+        ],
+        "share_topk_gt_random": 0.875,
+        "share_window_gt_sorted_topk": 0.1875,
+        "sorted_topk_equals_window_share": 0.125,
+        "mean_drop_sorted_topk_minus_window": 0.08305478282272816
+      },
+      "audio": {
+        "n_candidates_mean": 28.2,
+        "n_eligible": 18,
+        "n_excluded_too_few_candidates": 0,
+        "n_excluded_window_overlap": 2,
+        "mean_drop_window_top": 0.006327459381686317,
+        "mean_drop_window_random": 0.004665629896852705,
+        "mean_drop_window_low": 0.006121552652782864,
+        "mean_drop_sorted_topk": 0.007078127728568183,
+        "gap_window_top_minus_random": 0.0016618294848336115,
+        "gap_window_top_minus_random_ci95": [
+          -0.0010810174544652303,
+          0.004880336349209148
+        ],
+        "gap_window_random_minus_low": -0.0014559227559301589,
+        "gap_window_random_minus_low_ci95": [
+          -0.0031287301166190037,
+          -1.3967611723475963e-05
+        ],
+        "share_strict_order_window": 0.3333333333333333,
+        "share_strict_order_window_ci95": [
+          0.1111111111111111,
+          0.5555555555555556
+        ],
+        "share_topk_gt_random": 0.5555555555555556,
+        "share_window_gt_sorted_topk": 0.3888888888888889,
+        "sorted_topk_equals_window_share": 0.16666666666666666,
+        "mean_drop_sorted_topk_minus_window": 0.0007506683468818665
+      },
+      "vision": {
+        "n_candidates_mean": 26.7,
+        "n_eligible": 19,
+        "n_excluded_too_few_candidates": 1,
+        "n_excluded_window_overlap": 0,
+        "mean_drop_window_top": 0.01784385505475496,
+        "mean_drop_window_random": 0.008722832014686183,
+        "mean_drop_window_low": 0.013319561355992368,
+        "mean_drop_sorted_topk": 0.01898633257338875,
+        "gap_window_top_minus_random": 0.009121023040068777,
+        "gap_window_top_minus_random_ci95": [
+          -0.0040832491924888215,
+          0.030887364784353662
+        ],
+        "gap_window_random_minus_low": -0.0045967293413061855,
+        "gap_window_random_minus_low_ci95": [
+          -0.014836605293186087,
+          0.0011908547188106335
+        ],
+        "share_strict_order_window": 0.2631578947368421,
+        "share_strict_order_window_ci95": [
+          0.10526315789473684,
+          0.47368421052631576
+        ],
+        "share_topk_gt_random": 0.5789473684210527,
+        "share_window_gt_sorted_topk": 0.47368421052631576,
+        "sorted_topk_equals_window_share": 0.21052631578947367,
+        "mean_drop_sorted_topk_minus_window": 0.0011424775186337922
+      }
+    },
+    "dominant_modality_counts": {
+      "text": 19,
+      "audio": 0,
+      "vision": 1
+    },
+    "delivered_window": {
+      "n_evaluated": 17,
+      "dominant_modality_counts_on_subset": {
+        "text": 16,
+        "audio": 0,
+        "vision": 1
+      },
+      "mean_drop_delivered_window": 0.24812216969097362,
+      "mean_drop_random_window": 0.0422948535750894,
+      "mean_drop_low_window": 0.019995905020657706,
+      "gap_delivered_minus_random": 0.2058273161158842,
+      "gap_delivered_minus_random_ci95": [
+        0.07994690260466407,
+        0.39602122766130093
+      ],
+      "gap_random_minus_low": 0.022298948554431687,
+      "gap_random_minus_low_ci95": [
+        0.011652525759795133,
+        0.03339447916430586
+      ],
+      "share_delivered_gt_random_and_gt_low": 0.8823529411764706,
+      "share_strict_order": 0.8235294117647058,
+      "share_strict_order_ci95": [
+        0.6470588235294118,
+        1.0
+      ]
+    }
+  }
+}

@@ -8,9 +8,19 @@
 # ==========================================================
 
 project: q3_explain
-version: "1.1.1"
+version: "1.1.2"
 frozen: true
 frozen_date: "2026-09-25"
+# v1.1.2（2026-09-25）与 v1.1.1 的差异 —— 仍只增加**检验性**实验，模型与主流程产物未变：
+#  1) window_faithfulness.py：把「实际交付的证据区间」本身拿去做等预算对照
+#     （交付窗口 / 随机连续窗口 / 最低注意力连续窗口，k=3、R=5、按样本配对的 Bootstrap 区间），
+#     并报告「注意力排序前 k 位」与「连续窗口」的集合重叠率；输出 work/q3/window_faithfulness.json；
+#  2) invariance_check.py 增 G 项（Shapley 语义：可手算负贡献博弈 + 常数平移不变性 +
+#     全部 8 子集的有限性与概率和）；
+#  3) audit_extra.py 增 mask_consistency（候选位=可观测位−2、掩码外输入恒为零、
+#     音视频候选位为整行全零判定的子集，附件4 20/20 与附件2 验证集 728/728 均无违例）。
+# 影响：论文第 7 章新增「连续窗口遮蔽」一段，并补 7.2.2 / 7.3.2 / 7.3.3 / 7.3.4 / 7.3.5 / 7.3.6 / 7.5
+#     共 8 处文字与验收说明；模型权重、主流程结果、图、词表逐字节未变。
 # v1.1.1（2026-09-25）与 v1.1.0 的差异 —— 只增加两项**检验性**实验，模型与主流程产物未变：
 #  1) seed_stability.py：5 个随机种子（20260924/20260925/20260926/1/2）在相同数据划分、
 #     超参与选模准则下重跑训练、忠实度、留一扰动与门控，输出 work/q3/seed_stability.json；
@@ -216,8 +226,9 @@ outputs:
   eight_subsets: work/q3/附件4_8子集逐样本.csv        # 160 行：每样本 8 个子集的概率/强度
   all_fields: work/q3/附件4_预测与解释结果_全字段.csv  # 解释卡全字段（含不一致标记）
   audit: work/q3/q3_audit_extra.json                 # 测试划分指标/回归残差/mean|φ|/描述统计
-  invariance: work/q3/invariance_check.json          # 掩码验收（A–F 六项）
+  invariance: work/q3/invariance_check.json          # 掩码与不变式验收（A–G 七项）
   seed_stability: work/q3/seed_stability.json        # 5 个随机种子的指标/忠实度/留一/门控波动
   permutation: work/q3/permutation_test.json         # 置换检验：经验零分布、95% 区间、单侧 p 值
+  window_faithfulness: work/q3/window_faithfulness.json  # 连续窗口遮蔽对照 + 配对 Bootstrap 区间
   figures: output/figures/q3_*.png                   # 5 张
 

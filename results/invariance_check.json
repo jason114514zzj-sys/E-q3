@@ -68,6 +68,21 @@
       "mapping_verified_in_explanations": 20,
       "n_explanations": 20,
       "passed": true
+    },
+    "G_shapley_semantics": {
+      "how": "手算 3 参与者博弈 f(S)=0.7−0.1·1[T∈S]（全部子集输出非负）；核对可手算的 φ_T=−0.1 与常数平移（+3）不变性；再核对真实 8 子集响应的有限性与概率和",
+      "synthetic_all_values_nonnegative": true,
+      "synthetic_phi": {
+        "T": -0.1,
+        "A": 0.0,
+        "V": 0.0
+      },
+      "synthetic_hand_calculation_matches": true,
+      "constant_shift_invariance": true,
+      "eight_subset_rows": 160,
+      "rows_with_finite_probabilities": 160,
+      "rows_with_probability_sum_one": 160,
+      "passed": true
     }
   },
   "all_passed": true

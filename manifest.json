@@ -8,8 +8,8 @@
     "sha256": "aaf761644d8ccde78288ef469a2204037547084bc3b221536708d37bead8ced1"
   },
   "config.yaml": {
-    "bytes": 14241,
-    "sha256": "16427883194ae41c0abffef7fbbaea7a94ff84bd6a527ff1ad01d8efe5d289ad"
+    "bytes": 15456,
+    "sha256": "e7abfe576966fed67a362516d16876a84452da0aa01a51a722eb32a42086b9ee"
   },
   "protocol.json": {
     "bytes": 9424,
@@ -28,8 +28,8 @@
     "sha256": "4b7091c7542fe53afdd76de3711eb42c7505f0803401e1b5d6327a71ff2a4869"
   },
   "DELIVERABLES.md": {
-    "bytes": 13610,
-    "sha256": "5ca06b824b17e4625454118342946732ce2b9aeadb60c19f78f692545bc71e00"
+    "bytes": 13882,
+    "sha256": "0b35db856a6943f844944a8d9168478dc064f64f9145533d778be893aa3faefd"
   },
   "SERVER_ENV.md": {
     "bytes": 4787,
@@ -52,8 +52,8 @@
     "sha256": "3fc11d266fbd8a824746d4b9ad98c0e04b008679d2a88ed9db9e0415b1037757"
   },
   "src/q3_explain/audit_extra.py": {
-    "bytes": 20261,
-    "sha256": "ce3f112a9c237e089a0f82926afe0d769d58e7ce68054f205353d6998e1505d4"
+    "bytes": 23373,
+    "sha256": "5ff64fb0dbc6df62cde509cc84d673a95cf4a681ad64c6eb7560330e63a9cc4c"
   },
   "src/q3_explain/data.py": {
     "bytes": 10577,
@@ -64,8 +64,8 @@
     "sha256": "c3e42bb87a428eebe30be1b2541c52b43dffa1aa47d237af446f478dcdfbceb1"
   },
   "src/q3_explain/invariance_check.py": {
-    "bytes": 11134,
-    "sha256": "d29cd069b53b52e0943f24c9a5dceecd74d311494d8711ea96c16b5a90460d59"
+    "bytes": 15109,
+    "sha256": "13ed59b051107ce41ca86893de033e05b7951595373427dfeb1916e8ed9192a7"
   },
   "src/q3_explain/model.py": {
     "bytes": 11242,
@@ -95,6 +95,10 @@
     "bytes": 8049,
     "sha256": "c7a9cf8aa8004a8c9e79107870a0d8e7e85f7d7df8a83472f82f14657fb5f722"
   },
+  "src/q3_explain/window_faithfulness.py": {
+    "bytes": 14309,
+    "sha256": "2168c12d4a76524458744a0c1680cc62ef16cefb485eee89acc3df411bbf4585"
+  },
   "src/q3_explain/wordpiece.py": {
     "bytes": 6940,
     "sha256": "a4eb9c7b2ef611e15657eb55aebd68ca1b65600a727c32c82458106a4d6ca44d"
@@ -116,8 +120,8 @@
     "sha256": "43edfd2503235d857c1947baa8678d03177861363997a77b9bb1a346f07878bc"
   },
   "results/invariance_check.json": {
-    "bytes": 2565,
-    "sha256": "c6bb972d39db2a3c2481fbf396350eaa6caaf1265b15f129cb09a2f25083641d"
+    "bytes": 3189,
+    "sha256": "598dbc6fd12ef8393b1c1caffaa9fb2299e79ac39a992635acc091b6569ed6ec"
   },
   "results/permutation_test.json": {
     "bytes": 4634,
@@ -128,8 +132,8 @@
     "sha256": "2378d8b89fc9f0d19e9440a7f1326cb9263802cb7219c2750ef2d60ebf199d7e"
   },
   "results/q3_audit_extra.json": {
-    "bytes": 10362,
-    "sha256": "4b6ecfd95f31a2afad46b4598472b7294d1c741cfd980f509f37d45b7d42777a"
+    "bytes": 11281,
+    "sha256": "7a92194acc17db5510dc26bf7e5834b95593e00917b2f216af096f27d5b26bc6"
   },
   "results/q3_report.json": {
     "bytes": 16452,
@@ -142,6 +146,10 @@
   "results/shapley_attribution.json": {
     "bytes": 16995,
     "sha256": "400e693ed960eb0e24a5ee032253b270700fa610040f4f5ebe60aa3fd858dbfc"
+  },
+  "results/window_faithfulness.json": {
+    "bytes": 10246,
+    "sha256": "0cd50489cbed5253baf127de2e8b06313265f396e566407236cf773fd5e5a166"
   },
   "results/模态重要性_跨测试集对照.csv": {
     "bytes": 479,
@@ -196,12 +204,12 @@
     "sha256": "b3e2161cc974aa3f0aeddea685766f439b07820ee0b673f60d6d983f673da067"
   },
   "docs/问题三_运行说明.md": {
-    "bytes": 10537,
-    "sha256": "995147995f167a48a962a3d47d35f6121986f41e62c3f328395d5abfc1e34ad3"
+    "bytes": 11236,
+    "sha256": "24871712997e425eacd4159757c297328eb9d2593b736ec7d754679812a5d336"
   },
   "docs/问题三解题报告.md": {
-    "bytes": 9980,
-    "sha256": "bfa82d9a7f486c861eeeffba3d9a6daa2d1029b0e9525a75f4619b34385a2011"
+    "bytes": 10765,
+    "sha256": "09338e2f48bd0908f378f3cfff91c17a4c0751daee8e4f9f839d59c1118ff931"
   },
   "vocab/bert-base-uncased_vocab.txt": {
     "bytes": 231508,

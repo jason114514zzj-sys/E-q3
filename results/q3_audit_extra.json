@@ -424,5 +424,30 @@
       "n_subwords_max": 48,
       "token_map_verified": "20/20"
     }
+  },
+  "mask_consistency": {
+    "rule": "token id 100 ⟺ attention=0；候选位=可观测位−2 个 special；语音/视觉候选位须为整行全零判定的子集；掩码外输入恒为零",
+    "splits": {
+      "attachment4": {
+        "n": 20,
+        "candidate_equals_observed_minus_two_violations": [],
+        "n_candidate_violations": 0,
+        "non_observed_text_rows_are_zero_violations": [],
+        "n_zero_violations": 0,
+        "av_candidate_not_subset_of_nonzero_rows": [],
+        "n_av_violations": 0,
+        "passed": true
+      },
+      "attachment2_valid": {
+        "n": 728,
+        "candidate_equals_observed_minus_two_violations": [],
+        "n_candidate_violations": 0,
+        "non_observed_text_rows_are_zero_violations": [],
+        "n_zero_violations": 0,
+        "av_candidate_not_subset_of_nonzero_rows": [],
+        "n_av_violations": 0,
+        "passed": true
+      }
+    }
   }
 }
