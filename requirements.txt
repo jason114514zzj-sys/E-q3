@@ -1,0 +1,28 @@
+# ==========================================================
+# 第三问 可解释性多模态情感预测 —— 运行依赖
+# 目标机器: Tesla V100-PCIE-16GB (compute capability 7.0 / sm_70)
+# 实测版本见 runtime_versions.json
+# ==========================================================
+# ⚠️ 关键约束：V100 是 Volta 架构 (sm_70)。
+#    PyTorch >= 2.5 的官方 wheel 已移除 sm_70 内核，装上会报
+#    "no kernel image is available for execution on the device"。
+#    因此必须锁定 torch==2.4.1。
+# ==========================================================
+
+# ---- 深度学习框架 ----
+torch==2.4.1
+
+# ---- 科学计算 ----
+numpy==2.2.6
+scipy==1.15.3
+
+# ---- 可视化（4 张 q3_*.png）----
+# 中文需要 Noto Sans CJK JP；缺失时 matplotlib 只发 Warning，图内中文会静默变成方框
+matplotlib==3.10.9
+
+# ---- ffmpeg / ffprobe ----
+# evidence_time.py 需要可执行的 ffmpeg 与 ffprobe：
+#   查找顺序 = 环境变量 FFMPEG/FFPROBE → PATH → conda 前缀 → 当前解释器所在目录
+# 任选一种提供方式：
+imageio-ffmpeg            # 或
+# opencv-python-headless   # 或直接用系统包管理安装 ffmpeg

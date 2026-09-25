@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 数据集（属赛题原始数据，不入库）
+data/
+*.pkl
+*.mp4
+
+# 运行中间产物
+*.log
+work/
+
+# 编辑器
+.vscode/
+.idea/
+.DS_Store
+
+# 注意：submission_q3.zip 与 manifest.json **要入库**（交付包 + 逐文件哈希清单），
+# 因此不在此处忽略。
+
+# —— 公开守门：以下内容永不入库（第 27 轮，B 方案）——
+identity_blocklist.txt
+**/__pycache__/
+*.pyc

@@ -1,0 +1,7 @@
+split,modality,mean_abs_delta_intensity,median_abs_delta_intensity,n_samples_where_largest,share_where_largest,mean_rank
+附件2 验证集 (n=728),text,0.6228,0.4693,585,0.8036,1
+附件2 验证集 (n=728),audio,0.0852,0.0633,20,0.0275,3
+附件2 验证集 (n=728),vision,0.1383,0.097,123,0.169,2
+附件4 专项测试集 (n=20),text,0.8784,0.688,17,0.85,1
+附件4 专项测试集 (n=20),audio,0.1078,0.0688,0,0.0,3
+附件4 专项测试集 (n=20),vision,0.1896,0.0866,3,0.15,2

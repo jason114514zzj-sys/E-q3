@@ -1,0 +1,11 @@
+# 本仓库的核心卖点是「逐文件 sha256 可核验」（见 manifest.json）。
+# 因此**禁止任何行尾转换**：文件在存储与检出时都必须逐字节不变，
+# 否则在 Windows 上 clone 会得到 CRLF，哈希对不上。
+* -text
+
+# 显式标为二进制的类型
+*.png  binary
+*.pt   binary
+*.zip  binary
+*.npy  binary
+*.npz  binary

@@ -1,0 +1,170 @@
+# ==========================================================
+# 问题三 可解释性多模态情感预测 —— 冻结配置
+# ==========================================================
+# 本文件对应 src/q3_explain/ 的实现。训练、验证与附件4 推理
+# 所用的全部参数在此固定；修改任一项都必须重跑并更新
+# versions.txt 中的 q3 条目，同时把结果写入 output/。
+# 配套：output/evidence/问题三_运行说明.md（运行说明与数据集处理规则）
+# ==========================================================
+
+project: q3_explain
+version: "1.0.0"
+frozen: true
+frozen_date: "2026-09-25"
+
+# ---------------- 任务定义 ----------------
+# 题面段028/029：在给出极性 + 强度的同时，以可量化、可复核的方式说明
+# ① 不同模态在当前样本中的作用差异 ② 对预测起主要作用的模态
+# ③ 各模态中与判断密切相关的局部片段，且关键证据可回对到原始片段。
+task:
+  name: 可解释性多模态情感预测
+  outputs:
+    - {key: polarity,          type: 3分类, 题面: "段029「情感极性」"}
+    - {key: intensity,         type: 回归,  题面: "段029「情感强度」"}
+    - {key: dominant_modality, type: 字符串, 题面: "段029「主要参考模态」"}
+    - {key: modality_weights,  type: 向量(和=1), 题面: "段028「不同模态…作用差异」/段029「模态作用程度」"}
+    - {key: evidence_start/end + evidence_modality, type: 秒+模态,
+       题面: "段029「关键证据定位」，段017 配套视频用于回看"}
+  interpretability_type: 内在可解释（结构直接产出），非事后解释（SHAP/LIME）
+  reproducibility_checks:
+    - 遮蔽检验（attended top-k vs 随机 k 个有效位置）
+    - 留一模态扰动 LOMO（门控自述 vs 实测行为对照）
+
+# ---------------- 数据（段018：训练/验证/专项测试同一版本与接口） ----------------
+data:
+  feature_version: aligned_50          # 唯一允许的版本，与附件2 aligned_50.pkl 对应
+  attachment2: 附件2-数据集特征文件/aligned_50.pkl
+  splits:
+    train: train                       # 3395 条，用于学习参数
+    valid: valid                       # 728 条，用于选择模型/超参/决策阈值（段031）
+    test:  test                        # 727 条，**不参与任何选择**，仅用于核对不泄漏
+  inference_set: 附件4-可解释专项视频样本与特征文件/对齐版本/*.pkl   # 20 条，无标签
+  media_for_evidence: 附件4-可解释专项视频样本与特征文件/对齐版本/videos/*.mp4
+  text_representation: text            # 50×768 官方预计算表示（问题三使用官方 text）
+  # 说明：问题二因附件3 未提供 text 列而改走 text_bert + 冻结编码器（见问题二文档）；
+  #       三问在各自「训练↔推理」之间保持同一接口，符合段018。
+  text_mask: text_bert_channel1        # 0/1 注意力掩码
+  av_mask: zero_row                    # 逐位置全零 → 视为无效观测
+  padding_policy: zero_with_mask
+  max_positions: 50
+  content_slots: 48                    # 位置 0 = [CLS]，末位 = [SEP]（与问题一 config.yaml 一致）
+
+# ---------------- 预处理 ----------------
+preprocessing:
+  text:
+    # text 的填充值是**非零**的，因此 x==0 无法检测缺失，必须用 text_bert 掩码。
+    # 直接用 50 步平均 vs 掩码池化的相对 L2 差：mean 0.4343 / max 1.1189。
+    mask_source: text_bert[:, 1, :]
+    invalid_rows_are_zeroed: true
+    standardization: none            # 文本是 BERT 表示，不做数值标准化
+  audio_vision:
+    # audio 第 0 维范围 [0,500]，其余 73 维 ±50；标准差异比 394×。
+    scaling: per_dimension_zscore    # src/q1_alignment/feature_scaling.fit_scaler
+    fit_on: train_only               # 仅用 train 的**有效步**拟合（stats 见 q3_report.json）
+    invalid_rows_are_zeroed: true
+  dtype: float32
+
+# ---------------- 模型结构 ----------------
+model:
+  per_modality_encoder:                        # 每模态独立，否则无法分离贡献
+    proj: Linear(in_dim, hidden)
+    position_embedding: 可学习参数 (1, 50, hidden)，初始化 N(0, 0.02)
+    transformer_layers: 1
+    n_heads: 4
+    dim_feedforward: hidden * 2                # 192
+    activation: gelu
+    norm_first: true
+    batch_first: true
+    encoder_dropout: 0.1
+    output_norm: LayerNorm(hidden)
+  temporal_attention:                          # ← 关键证据定位
+    score: Linear(hidden, hidden/2) → Tanh → Linear(hidden/2, 1)
+    mask: 无效位置 logits 置 -inf 后 softmax
+  modality_gate:                               # ← 模态作用程度 / 主要参考模态
+    mlp: Linear(3*hidden, hidden) → GELU → Linear(hidden, 3)
+    normalize: softmax
+    hard_constraint: |
+      某个模态在该样本上完全无有效位置时，其 logits 硬置 -inf → 权重恒为 0，
+      其余模态重新归一化。**这是硬约束而非正则**：否则模型会给"没有数据"的
+      模态赋权，输出"主要参考模态 = vision"这类荒谬解释（附件2 验证集实测过
+      15 条此类样本被赋平均 0.287 的 vision 权重）。
+  fusion:
+    weighted_sum_then_layer_norm: true
+    dropout: 0.1
+  heads:
+    polarity: Linear(hidden, 3)
+    intensity: Linear(hidden, 1)
+
+# ---------------- 目标函数 ----------------
+loss:
+  classification: CrossEntropyLoss(weight=逆频率类权重)
+  regression: MSELoss
+  total: CE_w(极性) + lambda_reg * MSE(强度)
+
+# ---------------- 训练方案 ----------------
+training:
+  optimizer: AdamW
+  lr: 1.5e-3
+  weight_decay: 1e-4
+  scheduler: CosineAnnealingLR(T_max=epochs)
+  batch_size: 128
+  epochs: 60
+  patience: 12                    # 早停：验证集 macro-F1 连续 12 轮无改善
+  lambda_reg: 1.0
+  modality_dropout: 0.1           # 正则化用；与门控的 -inf 硬掩码是两件事
+  seed: 20260924
+  selection:
+    metric: 验证集 macro-F1       # 段031「在验证集上选择模型结构、超参数与决策阈值」
+    actual: best_epoch = 8，第 20 轮早停
+  decision_threshold: argmax      # 固定对称判决，等价于阈值为 0；无可调阈值
+  amp: false
+  device: cuda
+
+# ---------------- 评价 ----------------
+evaluation:
+  polarity: [Accuracy, Macro-F1]  # 段031
+  intensity: [MAE, Pearson]       # 段031
+  baselines:
+    - 多数类（Accuracy / Macro-F1）
+    - 训练集均值回归（MAE）
+  reported_on: 附件2 验证集（728 条）
+  note: |
+    验证集参与早停与最佳 epoch 选择，因此该表现属**开发评价**，
+    不是独立测试成绩。附件2 test 未参与任何选择。
+
+# ---------------- 关键证据时间 ----------------
+evidence_time:
+  method: word_level_forced_alignment     # 复用 q1_alignment.monotonic_align
+  audio: ffmpeg 解码 16 kHz 单声道 → 10 ms 一跳 RMS 能量包络
+  video: ffprobe 取真实时长（**不可信 mp4 头部 nb_frames**）
+  constraints: [首词起于 0.0, 末词止于时长 D, 严格单调, 语速 ∈ [1,6] 词/秒, 边界向能量谷吸附]
+  measured_quality: 20/20 条覆盖率 1.000；语速 1.80–4.01 词/秒
+  forbidden: j*D/50 均匀切分
+  forbidden_reason: |
+    实测这 50 个位置是**词片段轴**而不是等长时间片：
+    20/20 条满足「text_bert 掩码长度 = 音频有效位置数 + 2」（偏移恒为 2，corr = 1.000），
+    音频有效位置数在 11~48 间变化而非恒为 50，上限 48 与 content_slots 吻合。
+    均匀切分与词级对齐的偏差：均值 1.968 s、最大 3.627 s，最差样本 15 号 2.77×。
+  residual_limitation: 本机无 BERT 分词器，子词→词为按比例近似（比值约 1.2，通常误差 ≤1 词）
+
+# ---------------- 环境 ----------------
+environment:
+  conda_env: mosei
+  python: "3.10.21"
+  torch: "2.4.1+cu121"      # V100 (sm_70) 上限版本；torch≥2.5 官方 wheel 已移除 sm_70
+  numpy: "2.2.6"
+  matplotlib: "3.10.9"      # 中文需 Noto Sans CJK JP，否则静默渲染成方框
+  gpu: "Tesla V100-PCIE-16GB (compute capability 7.0)"
+  ffmpeg_ffprobe: 随 opencv-python-headless / imageio-ffmpeg 提供
+  note: 本环境与问题二的 Python 3.13 + torch 2.10.0+cu130 + RTX 4090 是**两套环境**，论文需分别说明
+
+# ---------------- 输出 ----------------
+outputs:
+  submission: output/q3/附件4_预测与解释结果.csv     # 20 行 × 8 列，无 BOM、纯 UTF-8
+  model: output/models/q3_model.pt                   # 含 state_dict / dims / hidden
+  training_record: output/models/q3_training.json    # 超参 + 逐轮 history + 验证指标
+  explanations: work/q3/explanations.json            # 20 条全量解释
+  cards: work/q3/解释卡.md                           # 典型样本解释卡
+  report: work/q3/q3_report.json                     # 指标/忠实度/门控-LOMO/时间溯源
+  time_map: work/q3/att4_time_map.json               # 20 条词级起止秒
+  figures: output/figures/q3_*.png                   # 4 张
